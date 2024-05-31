@@ -27,16 +27,26 @@ final class FastingStateCurrentFast extends FastingState {
   FastingStateCurrentFast(this.fastEntity);
 }
 
-final class FastingStateJournalItem extends FastingState {
-  final List<FastEntity> fastEntities;
-
-  FastingStateJournalItem(this.fastEntities);
-}
-
 final class FastingStateSelectedJournalDate extends FastingState {
   final DateTime selectedDate;
   final List<FastEntity> fastEntities;
 
   FastingStateSelectedJournalDate(
       {required this.selectedDate, required this.fastEntities});
+}
+
+final class FastingStateAllFasts extends FastingState {
+  final int totalFasts;
+  final int longestFast;
+  final int totalFastingHours;
+  final int daysWithFast;
+  final List<FastEntity> fastList;
+
+  FastingStateAllFasts({
+    required this.totalFasts,
+    required this.longestFast,
+    required this.totalFastingHours,
+    required this.daysWithFast,
+    required this.fastList,
+  });
 }

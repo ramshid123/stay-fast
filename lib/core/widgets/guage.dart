@@ -3,27 +3,23 @@ import 'dart:async';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
-import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
-import 'package:fasting_app/features/fasting/presentation/pages/period_selection_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class KustomGuage extends StatefulWidget {
   final double strokeWidth;
   final double height;
   final double width;
-  Color? backgroundColor;
-  Color? guageIndicatorColor;
+  final Color? backgroundColor;
+  final Color? guageIndicatorColor;
   final Color foregroundColor;
   final Duration duration;
   final DateTime startTime;
   final FastingTimeRatioEntity fastingTimeRatio;
 
-  KustomGuage({
+  const KustomGuage({
     super.key,
     this.strokeWidth = 20,
     this.height = 300.0,
@@ -45,6 +41,9 @@ class KustomGuageState extends State<KustomGuage>
   late AnimationController _controller;
   late Animation<double> _animation;
 
+  late Color? _backgroundColor;
+  late Color? _guageIndicatorColor;
+
   late Timer timer;
   ValueNotifier<double> guageValueNotifier = ValueNotifier(0.0);
   ValueNotifier<Duration> timeValueNotifier =
@@ -52,6 +51,8 @@ class KustomGuageState extends State<KustomGuage>
 
   @override
   void initState() {
+    _backgroundColor = widget.backgroundColor;
+    _guageIndicatorColor = widget.guageIndicatorColor;
     final rateOfChange = 1 / (widget.duration.inSeconds);
 
     final elapsedSeconds =
@@ -83,8 +84,8 @@ class KustomGuageState extends State<KustomGuage>
     if (guageValueNotifier.value == 0) {
       guageValueNotifier.value = 0.001;
     }
-    widget.backgroundColor ??= widget.foregroundColor.withOpacity(0.3);
-    widget.guageIndicatorColor ??= widget.foregroundColor.withOpacity(0.3);
+    _backgroundColor ??= widget.foregroundColor.withOpacity(0.3);
+    _guageIndicatorColor ??= widget.foregroundColor.withOpacity(0.3);
 
     guageValueNotifier.addListener(_valueChanged);
 
@@ -141,7 +142,7 @@ class KustomGuageState extends State<KustomGuage>
               child: CircularProgressIndicator(
                 strokeWidth: widget.strokeWidth.r,
                 strokeCap: StrokeCap.round,
-                color: widget.backgroundColor,
+                color: _backgroundColor,
                 value: 0.8,
               ),
             ),
@@ -171,7 +172,7 @@ class KustomGuageState extends State<KustomGuage>
                     width: 3.w,
                     height: (widget.height.r / 30),
                     decoration: BoxDecoration(
-                      color: widget.guageIndicatorColor,
+                      color: _guageIndicatorColor,
                       borderRadius: BorderRadius.circular(widget.height.r),
                     ),
                   ),
@@ -239,7 +240,7 @@ class KustomGuageState extends State<KustomGuage>
                   ),
                 ),
                 Transform.translate(
-                  offset: Offset(0, widget.strokeWidth.r * 0.4),
+                  offset: Offset(0, widget.strokeWidth.sp * 0.3),
                   child: kText(
                     '${widget.fastingTimeRatio.fast}:${widget.fastingTimeRatio.eat}',
                     color: ColorConstantsDark.buttonBackgroundColor,
@@ -298,10 +299,7 @@ class _GuageOuterAnimation extends StatefulWidget {
   final double width;
   final double strokeWidth;
   const _GuageOuterAnimation(
-      {super.key,
-      required this.height,
-      required this.width,
-      required this.strokeWidth});
+      {required this.height, required this.width, required this.strokeWidth});
 
   @override
   State<_GuageOuterAnimation> createState() => __GuageOuterAnimationState();

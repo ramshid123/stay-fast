@@ -6,7 +6,6 @@ import 'package:fasting_app/core/enums/guage_status.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/bottom_nav_bar.dart';
 import 'package:fasting_app/core/widgets/guage.dart';
-import 'package:fasting_app/core/widgets/rotating_circle.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/period_selection_page.dart';
@@ -40,17 +39,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          context.read<FastingBloc>().add(FastingEventSaveFast(
-                durationInMilliseconds:
-                    const Duration(hours: 13).inMilliseconds,
-                fastingTimeRatio: FastingTimeRatioEntity(fast: 13, eat: 11),
-                startTime: DateTime.now().subtract(Duration(hours: 5)),
-                status: FastStatus.ongoing,
-              ));
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     context.read<FastingBloc>().add(FastingEventSaveFast(
+      //           durationInMilliseconds:
+      //               const Duration(hours: 13).inMilliseconds,
+      //           fastingTimeRatio: FastingTimeRatioEntity(fast: 13, eat: 11),
+      //           startTime: DateTime.now().subtract(Duration(hours: 5)),
+      //           status: FastStatus.ongoing,
+      //         ));
+      //   },
+      // ),
       appBar: AppBar(
         title: RichText(
           text: TextSpan(
@@ -140,7 +139,6 @@ class _HomePageState extends State<HomePage> {
                         if (state is! FastingStateCurrentFast) {
                           return Container();
                         }
-                        print('guage build');
                         switch (guageStatus) {
                           case GuageStatus.running:
                             return KustomGuage(
@@ -151,9 +149,7 @@ class _HomePageState extends State<HomePage> {
                               guageIndicatorColor:
                                   ColorConstantsDark.container2Color,
                               strokeWidth: 40.w,
-                              startTime: (state as FastingStateCurrentFast)
-                                  .fastEntity!
-                                  .startTime!,
+                              startTime: state.fastEntity!.startTime!,
                               duration: Duration(
                                   milliseconds: state
                                       .fastEntity!.durationInMilliseconds!),
@@ -167,18 +163,16 @@ class _HomePageState extends State<HomePage> {
                             );
 
                           case GuageStatus.inactive:
-                            return Container(
-                              child: Column(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () async => await Navigator.push(
-                                        context, PeriodSelectionPage.route()),
-                                    child: kText(
-                                        '${fastingTimeRatio.fast}:${fastingTimeRatio.eat}'),
-                                  ),
-                                  kText('Inactive'),
-                                ],
-                              ),
+                            return Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () async => await Navigator.push(
+                                      context, PeriodSelectionPage.route()),
+                                  child: kText(
+                                      '${fastingTimeRatio.fast}:${fastingTimeRatio.eat}'),
+                                ),
+                                kText('Inactive'),
+                              ],
                             );
                         }
                       },

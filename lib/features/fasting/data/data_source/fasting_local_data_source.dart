@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fasting_app/core/enums/fast_status.dart';
 import 'package:fasting_app/core/error/kserver_exception.dart';
 import 'package:fasting_app/features/fasting/data/models/fast_model.dart';
@@ -11,6 +9,8 @@ abstract interface class FastingLocalDataSource {
   Future<List<FastModel>> getFastsByDate({required DateTime savedData});
 
   Future<FastModel?> getLastFast();
+
+  Future<List<FastModel>> getAllFasts();
 }
 
 class FastingLocalDataSourceImpl implements FastingLocalDataSource {
@@ -52,6 +52,18 @@ class FastingLocalDataSourceImpl implements FastingLocalDataSource {
           .sortByStartTimeDesc()
           .limit(1)
           .findFirst();
+    } catch (e) {
+      throw KServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<FastModel>> getAllFasts() async {
+    try {
+      return await isarInstance.fastModels
+          .filter()
+          .statusEqualTo(FastStatus.finished)
+          .findAll();
     } catch (e) {
       throw KServerException(e.toString());
     }

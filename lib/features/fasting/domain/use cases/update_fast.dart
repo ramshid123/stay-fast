@@ -1,4 +1,3 @@
-import 'package:fasting_app/core/entities/fast_entity.dart';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/enums/fast_status.dart';
 import 'package:fasting_app/core/error/kfailure.dart';

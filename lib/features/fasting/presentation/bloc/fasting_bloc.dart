@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/usecase/use_case.dart';
 import 'package:fasting_app/core/entities/fast_entity.dart';
+import 'package:fasting_app/features/fasting/domain/use%20cases/get_all_fasts.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_fast_on_date.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_last_fast.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/update_fast.dart';
@@ -19,16 +20,19 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
   final UseCaseGetLastFast _useCaseGetLastFast;
   final UseCaseUpdateFast _useCaseUpdateFast;
   final UseCaseGetFastOnDate _useCaseGetFastOnDate;
+  final UseCaseGetAllFasts _useCaseGetAllFasts;
 
   FastingBloc({
     required UseCaseSaveFast useCaseSaveFast,
     required UseCaseGetLastFast useCaseGetLastFast,
     required UseCaseUpdateFast useCaseUpdateFast,
     required UseCaseGetFastOnDate useCaseGetFastOnDate,
+    required UseCaseGetAllFasts useCaseGetAllFasts,
   })  : _useCaseSaveFast = useCaseSaveFast,
         _useCaseGetLastFast = useCaseGetLastFast,
         _useCaseUpdateFast = useCaseUpdateFast,
         _useCaseGetFastOnDate = useCaseGetFastOnDate,
+        _useCaseGetAllFasts = useCaseGetAllFasts,
         super(FastingStateInitial()) {
     on<FastingEventCheckFast>(
         (event, emit) async => await _onFastingCheckFast(event, emit));
@@ -41,27 +45,60 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
     on<FastingEventUpdateFast>(
         (event, emit) async => await _onFastingEventUpdateFast(event, emit));
 
-    on<FastingEventGetFastOnDate>(
-        (event, emit) async => await _onFastingEventGetFastOnDate(event, emit));
     on<FastingEventSelectJournalDate>(
         (event, emit) => _onFastingEventSelectJournalDate(event, emit));
+
+    on<FastingEventGetAllFasts>(
+        (event, emit) async => await _onFastingEventGetAllFasts(event, emit));
+  }
+
+  Future _onFastingEventGetAllFasts(
+      FastingEventGetAllFasts event, Emitter<FastingState> emit) async {
+    final res = await _useCaseGetAllFasts(const NoParams());
+
+    res.fold(
+      (l) => emit(FastingStateFailure(l.message)),
+      (r) {
+        int fastingDurationInMilliseconds = 0;
+        int longestFast = 0;
+
+        DateTime date = DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().year);
+        int daysWithFast = 0;
+
+        for (var fast in r) {
+          fastingDurationInMilliseconds +=
+              fast.completedDurationInMilliseconds ?? 0;
+          if ((fast.completedDurationInMilliseconds ?? 0) > longestFast) {
+            longestFast = fast.completedDurationInMilliseconds ?? longestFast;
+          }
+
+          if (date != fast.savedOn) {
+            daysWithFast++;
+          }
+          date = fast.savedOn!;
+        }
+        // final totalFastingHours =
+        //     Duration(milliseconds: fastingDurationInMilliseconds)
+        //         .inHours; /
+
+        final totalFastNo = r.length;
+
+        emit(FastingStateAllFasts(
+          totalFasts: totalFastNo,
+          longestFast: longestFast,
+          daysWithFast: daysWithFast,
+          totalFastingHours: fastingDurationInMilliseconds,
+          fastList: r,
+        ));
+      },
+    );
   }
 
   void _onFastingEventChangeFastPeriod(
       FastingEventChangeFastPeriod event, Emitter<FastingState> emit) {
     emit(FastingStateSelectedTimeRatio(FastingTimeRatioEntity(
         fast: event.fastingTimeRatio.fast, eat: event.fastingTimeRatio.eat)));
-  }
-
-  Future _onFastingEventGetFastOnDate(
-      FastingEventGetFastOnDate event, Emitter<FastingState> emit) async {
-    final res =
-        await _useCaseGetFastOnDate(UseCaseGetFastOnDateParams(event.savedOn));
-
-    res.fold(
-      (l) => emit(FastingStateFailure(l.message)),
-      (r) => emit(FastingStateJournalItem(r)),
-    );
   }
 
   void _onFastingEventSelectJournalDate(

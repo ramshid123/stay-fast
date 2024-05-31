@@ -1,37 +1,32 @@
-import 'dart:developer';
-
 import 'package:fasting_app/core/entities/fast_entity.dart';
-import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/extensions/list_padding.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/bottom_nav_bar.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:intl/intl.dart';
 
 class JournalPage extends StatelessWidget {
-  JournalPage({super.key});
+  const JournalPage({super.key});
 
-  static route() => MaterialPageRoute(builder: (context) => JournalPage());
-
-  Map<int, int?> fastingHoursCache = {};
+  static route() =>
+      MaterialPageRoute(builder: (context) => const JournalPage());
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(size.width, 250.h),
+        preferredSize: Size(size.width, size.height / 2.8),
         child: SafeArea(
           child: Container(
             color: ColorConstantsDark.backgroundColor,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 kHeight(10.h),
                 kText(
@@ -52,16 +47,6 @@ class JournalPage extends StatelessWidget {
                             return null;
                           }
 
-                          final today = DateTime(DateTime.now().year,
-                              DateTime.now().month, DateTime.now().day);
-                          if (!fastingHoursCache.containsKey(today
-                              .subtract(Duration(days: index))
-                              .millisecondsSinceEpoch)) {
-                            context.read<FastingBloc>().add(
-                                FastingEventGetFastOnDate(
-                                    today.subtract(Duration(days: index))));
-                          }
-
                           return _scrollItem(
                             context: context,
                             dateTime: DateTime(DateTime.now().year,
@@ -76,9 +61,25 @@ class JournalPage extends StatelessWidget {
                   ),
                 ),
                 kHeight(20.h),
-                kText(
-                  'Today, 4:52 PM',
-                  fontSize: 23,
+                BlocBuilder<FastingBloc, FastingState>(
+                  buildWhen: ((prev, current) {
+                    if (current is FastingStateSelectedJournalDate) {
+                      return true;
+                    }
+                    return false;
+                  }),
+                  builder: (context, state) {
+                    return kText(
+                      state is! FastingStateSelectedJournalDate ||
+                              state.fastEntities.isEmpty
+                          ? ''
+                          : DateFormat("MMM d, yyyy")
+                              .format(state.fastEntities.first.savedOn!),
+                      // 'Droid Sans Mono', 'monospace', monospace
+                      // 'Today, 4:52 PM',
+                      fontSize: 23,
+                    );
+                  },
                 ),
                 kHeight(10.h),
               ],
@@ -269,80 +270,13 @@ class JournalPage extends StatelessWidget {
                           ? ColorConstantsDark.container1Color
                           : ColorConstantsDark.iconsColor),
                   kHeight(8.h),
-                  BlocBuilder<FastingBloc, FastingState>(
-                    buildWhen: ((previous, current) {
-                      // if (DateTime(2024, 5, 23).eqvDay(dateTime)) {
-                      //   return true;
-                      // }
-                      // return false;
-
-                      if (fastingHoursCache[dateTime.millisecondsSinceEpoch] ==
-                          null) {
-                        return false;
-                      }
-
-                      if (current is FastingStateJournalItem &&
-                          current.fastEntities.isNotEmpty &&
-                          DateTime(
-                                  current.fastEntities.first.endTime!.year,
-                                  current.fastEntities.first.endTime!.month,
-                                  current.fastEntities.first.endTime!.day)
-                              .eqvDay(dateTime)) {
-                        return true;
-                      }
-
-                      return false;
-                    }),
-                    builder: (context, state) {
-                      int? hours;
-                      if (state is FastingStateJournalItem &&
-                          fastingHoursCache[dateTime.millisecondsSinceEpoch] ==
-                              null) {
-                        for (var fast in state.fastEntities) {
-                          hours = (hours ?? 0) +
-                              Duration(
-                                      milliseconds:
-                                          fast.completedDurationInMilliseconds!)
-                                  .inSeconds;
-                        }
-
-                        fastingHoursCache[dateTime.millisecondsSinceEpoch] =
-                            hours;
-                      }
-                      log(fastingHoursCache[dateTime.millisecondsSinceEpoch]
-                          .toString());
-
-                      return fastingHoursCache[
-                                  dateTime.millisecondsSinceEpoch] ==
-                              null
-                          ? kText(
-                              '--',
-                              fontSize: 13,
-                              color: isSelected
-                                  ? ColorConstantsDark.container1Color
-                                  : ColorConstantsDark.iconsColor,
-                            )
-                          : Container(
-                              padding: EdgeInsets.all(4.r),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: isSelected
-                                      ? ColorConstantsDark.container1Color
-                                      : ColorConstantsDark.iconsColor,
-                                  width: 2.r,
-                                ),
-                              ),
-                              child: kText(
-                                '${hours}h',
-                                fontSize: 13,
-                                color: isSelected
-                                    ? ColorConstantsDark.container1Color
-                                    : ColorConstantsDark.iconsColor,
-                              ),
-                            );
-                    },
-                  )
+                  kText(
+                    '--',
+                    fontSize: 13,
+                    color: isSelected
+                        ? ColorConstantsDark.container1Color
+                        : ColorConstantsDark.iconsColor,
+                  ),
                 ],
               ),
             ),

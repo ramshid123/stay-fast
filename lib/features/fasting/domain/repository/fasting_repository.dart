@@ -30,4 +30,6 @@ abstract interface class FastingRepository {
     String? note,
     int? rating,
   });
+
+  Future<Either<KFailure, List<FastEntity>>> getAllFastsDetails();
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fasting_app/core/entities/fast_entity.dart';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/enums/fast_status.dart';
@@ -87,6 +85,15 @@ class FastingRepositoryImpl implements FastingRepository {
         status: status,
       ));
       return right(null);
+    } on KServerException catch (e) {
+      return left(KFailure(e.error));
+    }
+  }
+
+  @override
+  Future<Either<KFailure, List<FastEntity>>> getAllFastsDetails() async {
+    try {
+      return right(await fastingLocalDataSource.getAllFasts());
     } on KServerException catch (e) {
       return left(KFailure(e.error));
     }

@@ -1,18 +1,34 @@
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/bottom_nav_bar.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
+import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-class DashBoardPage extends StatelessWidget {
+class DashBoardPage extends StatefulWidget {
   const DashBoardPage({super.key});
 
   static route() =>
       MaterialPageRoute(builder: (context) => const DashBoardPage());
+
+  @override
+  State<DashBoardPage> createState() => _DashBoardPageState();
+}
+
+class _DashBoardPageState extends State<DashBoardPage> {
+  // int recordedLongestFast = 0;
+  // List<FastEntity> fastList = [];
+
+  @override
+  void initState() {
+    context.read<FastingBloc>().add(FastingEventGetAllFasts());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +40,7 @@ class DashBoardPage extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
         actions: [
-         const Icon(
+          const Icon(
             FontAwesomeIcons.gear,
           ),
           kWidth(15.w),
@@ -38,21 +54,47 @@ class DashBoardPage extends StatelessWidget {
           child: Column(
             children: [
               kHeight(20.h),
-              GridView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10.h,
-                  crossAxisSpacing: 10.w,
-                  mainAxisExtent: 100.h,
-                ),
-                children: [
-                  _countDataContainer(title: 'Fasts', data: '0'),
-                  _countDataContainer(title: 'Longest Fast', data: '0h'),
-                  _countDataContainer(title: 'Total fasting time', data: '0h'),
-                  _countDataContainer(title: 'Days with fast', data: '0'),
-                ],
+              BlocBuilder<FastingBloc, FastingState>(
+                buildWhen: (previous, current) {
+                  if (current is FastingStateAllFasts) {
+                    return true;
+                  }
+                  return false;
+                },
+                builder: (context, state) {
+                  if (state is! FastingStateAllFasts) {
+                    return Container();
+                  }
+
+                  return GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10.h,
+                      crossAxisSpacing: 10.w,
+                      mainAxisExtent: 120.h,
+                    ),
+                    children: [
+                      _countDataContainer(
+                          title: 'Fasts', data: state.totalFasts.toString()),
+                      _countDataContainer(
+                          title: 'Longest Fast',
+                          data:
+                              // '${Duration(milliseconds: state.longestFast).inHours}h'),
+                              formatDuration(
+                                  Duration(milliseconds: state.longestFast))),
+                      _countDataContainer(
+                          title: 'Total fasting time',
+                          data: formatDuration(
+                              Duration(milliseconds: state.totalFastingHours))),
+                      // data: '${state.totalFastingHours}h'),
+                      _countDataContainer(
+                          title: 'Days with fast',
+                          data: state.daysWithFast.toString()),
+                    ],
+                  );
+                },
               ),
               kHeight(20.h),
               Container(
@@ -89,95 +131,127 @@ class DashBoardPage extends StatelessWidget {
                       fontSize: 13,
                     ),
                     kHeight(20.h),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          height: 260.h,
-                          child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              kText(
-                                '24',
-                                fontSize: 11,
-                                color: ColorConstantsDark.iconsColor
-                                    .withOpacity(0.7),
-                              ),
-                              const Spacer(),
-                              kText(
-                                '12',
-                                fontSize: 11,
-                                color: ColorConstantsDark.iconsColor
-                                    .withOpacity(0.7),
-                              ),
-                              const Spacer(),
-                              kText(
-                                '0',
-                                fontSize: 11,
-                                color: ColorConstantsDark.iconsColor
-                                    .withOpacity(0.7),
-                              ),
-                              // const Spacer(),
-                              kText(
-                                '',
-                                fontSize: 11,
-                              ),
-                              kText(
-                                '',
-                                fontSize: 11,
-                              ),
-                              kText(
-                                '',
-                                fontSize: 9,
-                                color: ColorConstantsDark.iconsColor
-                                    .withOpacity(0.7),
-                              ),
-                            ],
-                          ),
-                        ),
-                        kWidth(10.w),
-                        Column(
+                    BlocBuilder<FastingBloc, FastingState>(
+                      buildWhen: (previous, current) {
+                        if (current is FastingStateAllFasts) {
+                          return true;
+                        }
+                        return false;
+                      },
+                      builder: (context, state) {
+                        if (state is! FastingStateAllFasts) {
+                          return Container();
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Container(
-                              height: 230.h,
-                              width: 1.w,
-                              color: ColorConstantsDark.iconsColor
-                                  .withOpacity(0.5),
+                            SizedBox(
+                              height: 260.h,
+                              child: Column(
+                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  kText(
+                                    formatDuration(Duration(
+                                        milliseconds: state.longestFast)),
+                                    // '24',
+                                    fontSize: 11,
+                                    color: ColorConstantsDark.iconsColor
+                                        .withOpacity(0.7),
+                                  ),
+                                  const Spacer(),
+                                  kText(
+                                    formatDuration(Duration(
+                                        milliseconds: state.longestFast ~/ 2)),
+                                    fontSize: 11,
+                                    color: ColorConstantsDark.iconsColor
+                                        .withOpacity(0.7),
+                                  ),
+                                  const Spacer(),
+                                  kText(
+                                    '0',
+                                    fontSize: 11,
+                                    color: ColorConstantsDark.iconsColor
+                                        .withOpacity(0.7),
+                                  ),
+                                  // const Spacer(),
+                                  kText(
+                                    '',
+                                    fontSize: 11,
+                                  ),
+                                  kText(
+                                    '',
+                                    fontSize: 11,
+                                  ),
+                                  kText(
+                                    '',
+                                    fontSize: 9,
+                                    color: ColorConstantsDark.iconsColor
+                                        .withOpacity(0.7),
+                                  ),
+                                ],
+                              ),
                             ),
-                            kText(
-                              '',
-                              fontSize: 11,
+                            kWidth(10.w),
+                            Column(
+                              children: [
+                                Container(
+                                  height: 230.h,
+                                  width: 1.w,
+                                  color: ColorConstantsDark.iconsColor
+                                      .withOpacity(0.5),
+                                ),
+                                kText(
+                                  '',
+                                  fontSize: 11,
+                                ),
+                                kText(
+                                  '',
+                                  fontSize: 11,
+                                ),
+                                kText(
+                                  '',
+                                  fontSize: 9,
+                                  color: ColorConstantsDark.iconsColor
+                                      .withOpacity(0.7),
+                                ),
+                              ],
                             ),
-                            kText(
-                              '',
-                              fontSize: 11,
-                            ),
-                            kText(
-                              '',
-                              fontSize: 9,
-                              color: ColorConstantsDark.iconsColor
-                                  .withOpacity(0.7),
+                            Expanded(
+                              child: SizedBox(
+                                height: 250.h,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  reverse: true,
+                                  // itemCount: 20,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    final dateTime = DateTime(
+                                            DateTime.now().year,
+                                            DateTime.now().month,
+                                            DateTime.now().day)
+                                        .subtract(Duration(days: index));
+                                    int value = 0;
+
+                                    state.fastList
+                                        .where(
+                                            (fast) => fast.savedOn == dateTime)
+                                        .forEach((e) {
+                                      value = value +
+                                          (e.completedDurationInMilliseconds ??
+                                              0);
+                                    });
+                                    return _graphItem(
+                                        value: state.longestFast == 0
+                                            ? 0
+                                            : (value / state.longestFast) * 100,
+                                        dateTime: dateTime);
+                                  },
+                                ),
+                              ),
                             ),
                           ],
-                        ),
-                        Expanded(
-                          child: SizedBox(
-                            height: 250.h,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              reverse: true,
-                              // itemCount: 20,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return _graphItem(
-                                    value: Random.secure().nextDouble() * 100,
-                                    dateTime: DateTime.now()
-                                        .subtract(Duration(days: index)));
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -264,5 +338,34 @@ class DashBoardPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String formatDuration(Duration duration) {
+    if (duration.inMilliseconds < Duration.secondsPerMinute * 1) {
+      return '${duration.inSeconds}s';
+    } else if (duration.inMilliseconds <
+        Duration.minutesPerHour * Duration.secondsPerMinute) {
+      return '${duration.inMinutes}m';
+    } else if (duration.inMilliseconds <
+        Duration.hoursPerDay * Duration.minutesPerHour) {
+      return '${duration.inHours}h';
+    } else {
+      int days = duration.inDays;
+      int remainingHours = duration.inHours.remainder(Duration.hoursPerDay);
+      int remainingMinutes =
+          duration.inMinutes.remainder(Duration.minutesPerHour);
+
+      String formattedDuration = '';
+      if (days > 0) {
+        formattedDuration += '${days}d ';
+      }
+      if (remainingHours > 0) {
+        formattedDuration += '${remainingHours}h ';
+      }
+      if (remainingMinutes > 0) {
+        formattedDuration += '${remainingMinutes}m ';
+      }
+      return formattedDuration.trim();
+    }
   }
 }

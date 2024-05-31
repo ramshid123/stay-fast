@@ -28,12 +28,6 @@ final class FastingEventUpdateFast extends FastingEvent {
   FastingEventUpdateFast(this.fastEntity);
 }
 
-final class FastingEventGetFastOnDate extends FastingEvent {
-  final DateTime savedOn;
-
-  FastingEventGetFastOnDate(this.savedOn);
-}
-
 final class FastingEventStartFast extends FastingEvent {}
 
 final class FastingEventFinishFast extends FastingEvent {}
@@ -45,3 +39,5 @@ final class FastingEventSelectJournalDate extends FastingEvent {
 
   FastingEventSelectJournalDate(this.selectedDate);
 }
+
+final class FastingEventGetAllFasts extends FastingEvent {}

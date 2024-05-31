@@ -2,6 +2,7 @@ import 'package:fasting_app/features/fasting/data/data_source/fasting_local_data
 import 'package:fasting_app/features/fasting/data/models/fast_model.dart';
 import 'package:fasting_app/features/fasting/data/repository/fasting_repository_impl.dart';
 import 'package:fasting_app/features/fasting/domain/repository/fasting_repository.dart';
+import 'package:fasting_app/features/fasting/domain/use%20cases/get_all_fasts.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_fast_on_date.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_last_fast.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/save_fast.dart';
@@ -32,9 +33,11 @@ void _initFasting() {
     ..registerFactory(() => UseCaseGetLastFast(serviceLocator()))
     ..registerFactory(() => UseCaseUpdateFast(serviceLocator()))
     ..registerFactory(() => UseCaseGetFastOnDate(serviceLocator()))
+    ..registerFactory(() => UseCaseGetAllFasts(serviceLocator()))
     ..registerLazySingleton<FastingBloc>(() => FastingBloc(
           useCaseGetFastOnDate: serviceLocator(),
           useCaseSaveFast: serviceLocator(),
+          useCaseGetAllFasts: serviceLocator(),
           useCaseUpdateFast: serviceLocator(),
           useCaseGetLastFast: serviceLocator(),
         ));

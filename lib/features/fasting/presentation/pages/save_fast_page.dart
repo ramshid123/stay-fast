@@ -2,9 +2,11 @@ import 'package:fasting_app/core/entities/fast_entity.dart';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/enums/fast_status.dart';
 import 'package:fasting_app/core/theme/palette.dart';
+import 'package:fasting_app/core/utils/format_datetime.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,19 +17,32 @@ class SaveFastPage extends StatefulWidget {
   final DateTime startTime;
   final int durationInMilliseconds;
   final FastingTimeRatioEntity fastingTimeRatio;
+  final int? rating;
+  final String? note;
+  final DateTime? savedOn;
+  final DateTime? endTime;
 
-  const SaveFastPage(
-      {super.key,
-      required this.isarId,
-      required this.startTime,
-      required this.durationInMilliseconds,
-      required this.fastingTimeRatio});
+  const SaveFastPage({
+    super.key,
+    required this.isarId,
+    required this.startTime,
+    required this.durationInMilliseconds,
+    required this.fastingTimeRatio,
+    this.rating,
+    this.note,
+    this.savedOn,
+    this.endTime,
+  });
 
   static route({
     required Id isarId,
     required DateTime startTime,
     required int durationInMilliseconds,
     required FastingTimeRatioEntity fastingTimeRatio,
+    int? rating,
+    String? note,
+    DateTime? savedOn,
+    DateTime? endTime,
   }) =>
       MaterialPageRoute(
           builder: (context) => SaveFastPage(
@@ -35,6 +50,10 @@ class SaveFastPage extends StatefulWidget {
                 durationInMilliseconds: durationInMilliseconds,
                 fastingTimeRatio: fastingTimeRatio,
                 startTime: startTime,
+                rating: rating,
+                note: note,
+                savedOn: savedOn,
+                endTime: endTime,
               ));
 
   @override
@@ -43,6 +62,19 @@ class SaveFastPage extends StatefulWidget {
 
 class _SaveFastPageState extends State<SaveFastPage> {
   final noteTextController = TextEditingController();
+  late DateTime startTime;
+  late DateTime endTime;
+  ValueNotifier<int?> selectedRating = ValueNotifier(null);
+
+  @override
+  void initState() {
+    noteTextController.text = widget.note ?? '';
+    startTime = widget.startTime;
+    endTime = widget.endTime ?? DateTime.now();
+    selectedRating.value = widget.rating;
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -90,20 +122,25 @@ class _SaveFastPageState extends State<SaveFastPage> {
                     .read<FastingBloc>()
                     .add(FastingEventUpdateFast(FastEntity(
                       durationInMilliseconds: widget.durationInMilliseconds,
-                      endTime: DateTime.now(),
+                      endTime: endTime,
                       completedDurationInMilliseconds: widget.startTime
-                          .difference(DateTime.now())
+                          .difference(endTime)
                           .inMilliseconds
                           .abs(),
                       fastingTimeRatio: widget.fastingTimeRatio,
                       isarId: widget.isarId,
                       note: noteTextController.text,
-                      rating: 5,
-                      savedOn: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
+                      rating: selectedRating.value,
+                      savedOn: widget.savedOn ??
+                          DateTime(DateTime.now().year, DateTime.now().month,
+                              DateTime.now().day),
                       startTime: widget.startTime,
                       status: FastStatus.finished,
                     )));
+                context.read<FastingBloc>().add(FastingEventSelectJournalDate(
+                    widget.savedOn ??
+                        DateTime(DateTime.now().year, DateTime.now().month,
+                            DateTime.now().day)));
                 Navigator.of(context).pop();
               },
               child: Container(
@@ -138,7 +175,8 @@ class _SaveFastPageState extends State<SaveFastPage> {
               ),
               kHeight(2.h),
               kText(
-                '0 minutes',
+                // '0 minutes',
+                '${startTime.difference(endTime).inMinutes.remainder(60).abs()} minutes ${startTime.difference(endTime).inHours.abs() == 0 ? '' : '${startTime.difference(endTime).inHours.abs()} hours'}',
                 color: ColorConstantsDark.textColor,
               ),
               kHeight(40.h),
@@ -164,7 +202,8 @@ class _SaveFastPageState extends State<SaveFastPage> {
                         ),
                         kWidth(10.w),
                         kText(
-                          'Today 4:53 PM',
+                          formatDateTime(startTime),
+                          // 'Today 4:53 PM',
                           fontSize: 13,
                         ),
                         const Spacer(),
@@ -183,7 +222,8 @@ class _SaveFastPageState extends State<SaveFastPage> {
                         ),
                         kWidth(10.w),
                         kText(
-                          'Today 4:53 PM',
+                          formatDateTime(endTime),
+                          // 'Today 4:53 PM',
                           fontSize: 13,
                         ),
                         const Spacer(),
@@ -208,31 +248,45 @@ class _SaveFastPageState extends State<SaveFastPage> {
                   children: [
                     kText('Rating'),
                     kHeight(20.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.faceTired,
-                          size: 30.r,
-                        ),
-                        Icon(
-                          FontAwesomeIcons.faceFrown,
-                          size: 30.r,
-                        ),
-                        Icon(
-                          FontAwesomeIcons.faceMeh,
-                          size: 30.r,
-                        ),
-                        Icon(
-                          FontAwesomeIcons.faceSmile,
-                          size: 30.r,
-                        ),
-                        Icon(
-                          FontAwesomeIcons.faceLaughBeam,
-                          size: 30.r,
-                        ),
-                      ],
-                    ),
+                    ValueListenableBuilder(
+                        valueListenable: selectedRating,
+                        builder: (context, value, child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _ratingEmoji(
+                                icon: FontAwesomeIcons.faceTired,
+                                ratingIndex: 1,
+                                selectedRating: selectedRating,
+                                color: const Color(0xffFF0000),
+                              ),
+                              _ratingEmoji(
+                                icon: FontAwesomeIcons.faceFrown,
+                                ratingIndex: 2,
+                                selectedRating: selectedRating,
+                                color: const Color(0xffFFA500),
+                              ),
+                              _ratingEmoji(
+                                icon: FontAwesomeIcons.faceMeh,
+                                ratingIndex: 3,
+                                selectedRating: selectedRating,
+                                color: const Color(0xffFFFF00),
+                              ),
+                              _ratingEmoji(
+                                icon: FontAwesomeIcons.faceSmile,
+                                ratingIndex: 4,
+                                selectedRating: selectedRating,
+                                color: const Color(0xff90EE90),
+                              ),
+                              _ratingEmoji(
+                                icon: FontAwesomeIcons.faceLaughBeam,
+                                ratingIndex: 5,
+                                selectedRating: selectedRating,
+                                color: const Color.fromARGB(255, 0, 255, 0),
+                              ),
+                            ],
+                          );
+                        }),
                   ],
                 ),
               ),
@@ -268,6 +322,24 @@ class _SaveFastPageState extends State<SaveFastPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _ratingEmoji({
+    required IconData icon,
+    required int ratingIndex,
+    required ValueNotifier<int?> selectedRating,
+    required Color color,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        selectedRating.value = ratingIndex;
+      },
+      child: Icon(
+        icon,
+        size: 30.r,
+        color: ratingIndex == selectedRating.value ? color : null,
       ),
     );
   }

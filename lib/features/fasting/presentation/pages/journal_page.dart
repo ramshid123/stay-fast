@@ -4,6 +4,7 @@ import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/bottom_nav_bar.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
+import 'package:fasting_app/features/fasting/presentation/pages/save_fast_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,6 +21,7 @@ class JournalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      // extendBody: true,
       appBar: PreferredSize(
         preferredSize: Size(size.width, size.height / 2.8),
         child: SafeArea(
@@ -72,7 +74,7 @@ class JournalPage extends StatelessWidget {
                     return kText(
                       state is! FastingStateSelectedJournalDate ||
                               state.fastEntities.isEmpty
-                          ? ''
+                          ? 'No Records'
                           : DateFormat("MMM d, yyyy")
                               .format(state.fastEntities.first.savedOn!),
                       // 'Droid Sans Mono', 'monospace', monospace
@@ -88,130 +90,140 @@ class JournalPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: bottomNavBar(context),
-      body: SingleChildScrollView(
-        clipBehavior: Clip.none,
+      body: SafeArea(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 15.w),
-          child: Column(
-            children: [
-              kHeight(10.h),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
-                decoration: BoxDecoration(
-                  color: ColorConstantsDark.container1Color,
-                  borderRadius: BorderRadius.circular(15.r),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(),
+          child: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 15.w),
+              child: Column(
+                children: [
+                  kHeight(10.h),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+                    decoration: BoxDecoration(
+                      color: ColorConstantsDark.container1Color,
+                      borderRadius: BorderRadius.circular(15.r),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        kText(
-                          'Fasts',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                        Row(
+                          children: [
+                            kText(
+                              'Fasts',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            kWidth(10.w),
+                            kText(
+                              '[0h 0m]',
+                              fontSize: 13,
+                              color: ColorConstantsDark.iconsColor,
+                            ),
+                            const Spacer(),
+                            kText(
+                              'Add fast',
+                              fontSize: 13,
+                              color: ColorConstantsDark.iconsColor,
+                            ),
+                            kWidth(10.w),
+                            Icon(
+                              FontAwesomeIcons.circlePlus,
+                              size: 17.r,
+                            ),
+                          ],
                         ),
-                        kWidth(10.w),
-                        kText(
-                          '[0h 0m]',
-                          fontSize: 13,
-                          color: ColorConstantsDark.iconsColor,
-                        ),
-                        const Spacer(),
-                        kText(
-                          'Add fast',
-                          fontSize: 13,
-                          color: ColorConstantsDark.iconsColor,
-                        ),
-                        kWidth(10.w),
-                        Icon(
-                          FontAwesomeIcons.circlePlus,
-                          size: 17.r,
+                        BlocBuilder<FastingBloc, FastingState>(
+                          buildWhen: (previous, current) {
+                            if (current is FastingStateSelectedJournalDate) {
+                              return true;
+                            }
+                            return false;
+                          },
+                          builder: (context, state) {
+                            List<FastEntity> fastEntities = [];
+                            if (state is FastingStateSelectedJournalDate) {
+                              fastEntities = state.fastEntities;
+                            }
+                            return Column(
+                              children: [
+                                if (fastEntities.isEmpty) ...[
+                                  kHeight(20.h),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: kText(
+                                      'No fasts for the day',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                  kHeight(20.h)
+                                ] else
+                                  for (var fast in fastEntities)
+                                    _fastItem(fast),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
-                    BlocBuilder<FastingBloc, FastingState>(
-                      buildWhen: (previous, current) {
-                        if (current is FastingStateSelectedJournalDate) {
-                          return true;
-                        }
-                        return false;
-                      },
-                      builder: (context, state) {
-                        List<FastEntity> fastEntities = [];
-                        if (state is FastingStateSelectedJournalDate) {
-                          fastEntities = state.fastEntities;
-                        }
-                        return Column(
-                          children: [
-                            if (fastEntities.isEmpty) ...[
-                              kHeight(20.h),
-                              Align(
-                                alignment: Alignment.center,
-                                child: kText(
-                                  'No fasts for the day',
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                              kHeight(20.h)
-                            ] else
-                              for (var fast in fastEntities) _fastItem(fast),
-                          ],
-                        );
-                      },
+                  ),
+                  kHeight(20.h),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+                    decoration: BoxDecoration(
+                      color: ColorConstantsDark.container1Color,
+                      borderRadius: BorderRadius.circular(15.r),
                     ),
-                  ],
-                ),
-              ),
-              kHeight(20.h),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
-                decoration: BoxDecoration(
-                  color: ColorConstantsDark.container1Color,
-                  borderRadius: BorderRadius.circular(15.r),
-                ),
-                child: Column(
-                  children: [
-                    Row(
+                    child: Column(
                       children: [
-                        kText(
-                          'Weight',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                        Row(
+                          children: [
+                            kText(
+                              'Weight',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            const Spacer(),
+                            CircleAvatar(
+                              backgroundColor: ColorConstantsDark.iconsColor
+                                  .withOpacity(0.1),
+                              radius: 15.r,
+                              child: Icon(
+                                FontAwesomeIcons.pen,
+                                size: 14.r,
+                              ),
+                            ),
+                          ],
                         ),
-                        const Spacer(),
-                        CircleAvatar(
-                          backgroundColor:
-                              ColorConstantsDark.iconsColor.withOpacity(0.1),
-                          radius: 15.r,
-                          child: Icon(
-                            FontAwesomeIcons.pen,
-                            size: 14.r,
+                        kHeight(20.h),
+                        kText(
+                          'No weight recorded',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w300,
+                        ),
+                        kHeight(20.h),
+                        Container(
+                          height: 10.h,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color:
+                                ColorConstantsDark.iconsColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(50.r),
                           ),
                         ),
                       ],
                     ),
-                    kHeight(20.h),
-                    kText(
-                      'No weight recorded',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w300,
-                    ),
-                    kHeight(20.h),
-                    Container(
-                      height: 10.h,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: ColorConstantsDark.iconsColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(50.r),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  kHeight(20.h),
+                ],
               ),
-              kHeight(20.h),
-            ],
+            ),
           ),
         ),
       ),
@@ -287,67 +299,85 @@ class JournalPage extends StatelessWidget {
   }
 
   Widget _fastItem(FastEntity fastEntity) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 20.h),
-          height: 1.h,
-          width: double.infinity,
-          color: ColorConstantsDark.iconsColor.withOpacity(0.3),
-        ),
-        Row(
-          children: [
-            kText(
-              '${fastEntity.fastingTimeRatio!.fast}:${fastEntity.fastingTimeRatio!.eat} fast',
-              // '11:13 fast',
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
-            kWidth(10.w),
-            Icon(
-              FontAwesomeIcons.pen,
-              size: 13.r,
-            ),
-            const Spacer(),
-            kText(
-                // '0h 0m',
-                '${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inHours}h ${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inMinutes.remainder(60)}m'),
-          ],
-        ),
-        kHeight(5.h),
-        ...[
-          Row(
-            children: [
-              Icon(
-                FontAwesomeIcons.play,
-                size: 12.r,
-              ),
-              kWidth(5.w),
-              kText(
-                // 'Today 4:53 PM',
-                '${DateTime(fastEntity.startTime!.year, fastEntity.startTime!.month, fastEntity.startTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.startTime!)} ${DateFormat('jm').format(fastEntity.startTime!)}',
-                fontSize: 12,
-                letterSpacing: 0.5,
-              ),
-            ],
+    return Builder(builder: (context) {
+      return Column(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 20.h),
+            height: 1.h,
+            width: double.infinity,
+            color: ColorConstantsDark.iconsColor.withOpacity(0.3),
           ),
           Row(
             children: [
-              Icon(
-                FontAwesomeIcons.flagCheckered,
-                size: 12.r,
-              ),
-              kWidth(5.w),
               kText(
-                // 'Today 10:12 PM',
-                '${DateTime(fastEntity.endTime!.year, fastEntity.endTime!.month, fastEntity.endTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.endTime!)} ${DateFormat('jm').format(fastEntity.endTime!)}',
-                fontSize: 12,
-                letterSpacing: 0.5,
+                '${fastEntity.fastingTimeRatio!.fast}:${fastEntity.fastingTimeRatio!.eat} fast',
+                // '11:13 fast',
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
               ),
+              kWidth(10.w),
+              GestureDetector(
+                onTap: () async {
+                  await Navigator.of(context).push(SaveFastPage.route(
+                    isarId: fastEntity.isarId!,
+                    startTime: fastEntity.startTime!,
+                    durationInMilliseconds: fastEntity.durationInMilliseconds!,
+                    fastingTimeRatio: fastEntity.fastingTimeRatio!,
+                    endTime: fastEntity.endTime,
+                    note: fastEntity.note,
+                    rating: fastEntity.rating,
+                    savedOn: fastEntity.savedOn,
+                  ));
+                },
+                child: SizedBox(
+                  child: Icon(
+                    FontAwesomeIcons.pen,
+                    size: 13.r,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              kText(
+                  // '0h 0m',
+                  '${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inHours}h ${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inMinutes.remainder(60)}m'),
             ],
-          )
-        ].kPaddingOnly(left: 10.w, top: 5.h),
-      ],
-    );
+          ),
+          kHeight(5.h),
+          ...[
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.play,
+                  size: 12.r,
+                ),
+                kWidth(5.w),
+                kText(
+                  // 'Today 4:53 PM',
+                  '${DateTime(fastEntity.startTime!.year, fastEntity.startTime!.month, fastEntity.startTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.startTime!)} ${DateFormat('jm').format(fastEntity.startTime!)}',
+                  fontSize: 12,
+                  letterSpacing: 0.5,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.flagCheckered,
+                  size: 12.r,
+                ),
+                kWidth(5.w),
+                kText(
+                  // 'Today 10:12 PM',
+                  '${DateTime(fastEntity.endTime!.year, fastEntity.endTime!.month, fastEntity.endTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.endTime!)} ${DateFormat('jm').format(fastEntity.endTime!)}',
+                  fontSize: 12,
+                  letterSpacing: 0.5,
+                ),
+              ],
+            )
+          ].kPaddingOnly(left: 10.w, top: 5.h),
+        ],
+      );
+    });
   }
 }

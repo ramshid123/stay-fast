@@ -8,15 +8,13 @@ class AppTheme {
       OutlineInputBorder(
         borderRadius: BorderRadius.circular(15.r),
         borderSide: BorderSide(
-          width: 2.w,
+          // width: 2.w,
           color: color,
         ),
       );
 
   static final darkMode = ThemeData.dark().copyWith(
-    textTheme: ThemeData.dark()
-        .textTheme
-        .apply(fontFamily: GoogleFonts.getFont('Poppins').fontFamily),
+    textTheme: GoogleFonts.poppinsTextTheme(),
     scaffoldBackgroundColor: ColorConstantsDark.backgroundColor,
     appBarTheme: AppBarTheme(
       centerTitle: true,

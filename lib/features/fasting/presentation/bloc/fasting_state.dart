@@ -3,6 +3,8 @@ part of 'fasting_bloc.dart';
 @immutable
 sealed class FastingState {}
 
+final class FastingStateRestartApp extends FastingState {}
+
 final class FastingStateInitial extends FastingState {}
 
 final class FastingStateLoading extends FastingState {}

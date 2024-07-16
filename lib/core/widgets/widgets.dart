@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Text kText(
   String text, {
@@ -11,6 +12,7 @@ Text kText(
   TextOverflow overflow = TextOverflow.ellipsis,
   int? maxLines,
   double? letterSpacing,
+  String? fontFamily,
 }) {
   return Text(
     text,
@@ -18,12 +20,20 @@ Text kText(
     overflow: overflow,
     maxLines: maxLines,
     softWrap: softWrap,
-    style: TextStyle(
-      fontWeight: fontWeight,
-      letterSpacing: letterSpacing,
-      fontSize: fontSize.sp,
-      color: color,
-    ),
+    style: fontFamily == null
+        ? TextStyle(
+            fontWeight: fontWeight,
+            letterSpacing: letterSpacing,
+            fontSize: fontSize.sp,
+            color: color,
+          )
+        : GoogleFonts.getFont(
+            fontFamily,
+            fontWeight: fontWeight,
+            letterSpacing: letterSpacing,
+            fontSize: fontSize.sp,
+            color: color,
+          ),
   );
 }
 

@@ -1,4 +1,5 @@
 import 'package:fasting_app/core/theme/palette.dart';
+import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/dashboard_page.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/home_page.dart';
@@ -7,43 +8,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-Widget bottomNavBar(BuildContext context) {
-  return Container(
-    height: 70.h,
-    color: ColorConstantsDark.backgroundColor,
-    width: double.infinity,
-    child: Row(
+Widget bottomNavBar({
+  required BuildContext context,
+  required int index,
+}) {
+  return Hero(
+    tag: 'bottomNavBar',
+    child: Stack(
       children: [
-        _bottomNavBarItem(
-            text: 'Fast',
-            icon: FontAwesomeIcons.house,
-            context: context,
-            route: HomePage.route()),
-        _bottomNavBarItem(
-            text: 'Journal',
-            icon: FontAwesomeIcons.book,
-            context: context,
-            route: JournalPage.route()),
-        _bottomNavBarItem(
-            text: 'Dashboard',
-            icon: FontAwesomeIcons.solidUser,
-            context: context,
-            route: DashBoardPage.route()),
+        Material(
+          color: Colors.transparent,
+          child: Container(
+            color: ColorConstantsDark.backgroundColor,
+            height: 70.h,
+            width: double.infinity,
+            child: Row(
+              children: [
+                _bottomNavBarItem(
+                    text: 'Fast',
+                    icon: FontAwesomeIcons.house,
+                    isCurrentPage: index == 0,
+                    context: context,
+                    route: HomePage.route()),
+                _bottomNavBarItem(
+                    text: 'Journal',
+                    icon: FontAwesomeIcons.book,
+                    isCurrentPage: index == 1,
+                    context: context,
+                    route: JournalPage.route()),
+                _bottomNavBarItem(
+                    text: 'Dashboard',
+                    icon: FontAwesomeIcons.solidUser,
+                    isCurrentPage: index == 2,
+                    context: context,
+                    route: DashBoardPage.route()),
+              ],
+            ),
+          ),
+        ),
       ],
     ),
   );
 }
 
 Widget _bottomNavBarItem({
-  required MaterialPageRoute route,
+  required PageRouteBuilder route,
   required BuildContext context,
+  required bool isCurrentPage,
   required String text,
   required IconData icon,
 }) {
   return Expanded(
     child: GestureDetector(
-      onTap: () async => await Navigator.of(context)
-          .pushAndRemoveUntil(route, (route) => false),
+      onTap: isCurrentPage
+          ? null
+          : () async {
+              // await HapticFeedback.vibrate();
+
+               vibrate();
+              await Navigator.of(context)
+                  .pushAndRemoveUntil(route, (route) => false);
+            },
       child: Container(
         color: Colors.transparent,
         child: Column(

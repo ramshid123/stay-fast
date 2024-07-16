@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/usecase/use_case.dart';
 import 'package:fasting_app/core/entities/fast_entity.dart';
+import 'package:fasting_app/features/fasting/domain/use%20cases/delete_fast.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_all_fasts.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_fast_on_date.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/get_last_fast.dart';
+import 'package:fasting_app/features/fasting/domain/use%20cases/reset_data.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/update_fast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +23,8 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
   final UseCaseUpdateFast _useCaseUpdateFast;
   final UseCaseGetFastOnDate _useCaseGetFastOnDate;
   final UseCaseGetAllFasts _useCaseGetAllFasts;
+  final UseCaseDeleteFast _useCaseDeleteFast;
+  final UseCaseResetData _useCaseResetData;
 
   FastingBloc({
     required UseCaseSaveFast useCaseSaveFast,
@@ -28,11 +32,15 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
     required UseCaseUpdateFast useCaseUpdateFast,
     required UseCaseGetFastOnDate useCaseGetFastOnDate,
     required UseCaseGetAllFasts useCaseGetAllFasts,
+    required UseCaseResetData useCaseResetData,
+    required UseCaseDeleteFast usecaseDeleteFast,
   })  : _useCaseSaveFast = useCaseSaveFast,
         _useCaseGetLastFast = useCaseGetLastFast,
         _useCaseUpdateFast = useCaseUpdateFast,
         _useCaseGetFastOnDate = useCaseGetFastOnDate,
         _useCaseGetAllFasts = useCaseGetAllFasts,
+        _useCaseDeleteFast = usecaseDeleteFast,
+        _useCaseResetData = useCaseResetData,
         super(FastingStateInitial()) {
     on<FastingEventCheckFast>(
         (event, emit) async => await _onFastingCheckFast(event, emit));
@@ -50,6 +58,12 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
 
     on<FastingEventGetAllFasts>(
         (event, emit) async => await _onFastingEventGetAllFasts(event, emit));
+
+    on<FastingEventDeleteFast>(
+        (event, emit) async => await _onFastingEventDeleteFast(event, emit));
+
+    on<FastingEventResetData>(
+        (event, emit) async => await _onFastingEventResetData(event, emit));
   }
 
   Future _onFastingEventGetAllFasts(
@@ -92,6 +106,26 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
           fastList: r,
         ));
       },
+    );
+  }
+
+  Future _onFastingEventResetData(
+      FastingEventResetData event, Emitter<FastingState> emit) async {
+    final response = await _useCaseResetData(UseCaseResetDataParams());
+
+    response.fold(
+      (l) => emit(FastingStateFailure(l.message)),
+      (r) => emit(FastingStateRestartApp()),
+    );
+  }
+
+  Future _onFastingEventDeleteFast(
+      FastingEventDeleteFast event, Emitter<FastingState> emit) async {
+    final res = await _useCaseDeleteFast(UseCaseDeleteFastParams(event.id));
+
+    res.fold(
+      (l) => emit(FastingStateFailure(l.message)),
+      (r) => add(FastingEventCheckFast()),
     );
   }
 
@@ -144,7 +178,7 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
 
   Future _onFastingCheckFast(
       FastingEventCheckFast event, Emitter<FastingState> emit) async {
-    emit(FastingStateLoading());
+    // emit(FastingStateLoading());
 
     final res = await _useCaseGetLastFast(const NoParams());
 

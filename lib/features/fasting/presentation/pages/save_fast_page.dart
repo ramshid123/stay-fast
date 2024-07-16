@@ -3,10 +3,12 @@ import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/enums/fast_status.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/format_datetime.dart';
+import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -101,23 +103,35 @@ class _SaveFastPageState extends State<SaveFastPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 15.h),
-              width: 150.w,
-              decoration: BoxDecoration(
-                color: ColorConstantsDark.backgroundColor,
-                borderRadius: BorderRadius.circular(50.r),
-              ),
-              child: Center(
-                child: kText(
-                  'Delete',
-                  fontSize: 13,
-                  color: ColorConstantsDark.buttonBackgroundColor,
+            GestureDetector(
+              onTap: () {
+                vibrate();
+                context
+                    .read<FastingBloc>()
+                    .add(FastingEventDeleteFast(widget.isarId));
+                Navigator.of(context).pop(widget.savedOn ??
+                    DateTime(DateTime.now().year, DateTime.now().month,
+                        DateTime.now().day));
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 15.h),
+                width: 150.w,
+                decoration: BoxDecoration(
+                  color: ColorConstantsDark.backgroundColor,
+                  borderRadius: BorderRadius.circular(50.r),
+                ),
+                child: Center(
+                  child: kText(
+                    'Delete',
+                    fontSize: 13,
+                    color: ColorConstantsDark.buttonBackgroundColor,
+                  ),
                 ),
               ),
             ),
             GestureDetector(
               onTap: () {
+                vibrate();
                 context
                     .read<FastingBloc>()
                     .add(FastingEventUpdateFast(FastEntity(
@@ -141,7 +155,9 @@ class _SaveFastPageState extends State<SaveFastPage> {
                     widget.savedOn ??
                         DateTime(DateTime.now().year, DateTime.now().month,
                             DateTime.now().day)));
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(widget.savedOn ??
+                    DateTime(DateTime.now().year, DateTime.now().month,
+                        DateTime.now().day));
               },
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 15.h),
@@ -334,6 +350,7 @@ class _SaveFastPageState extends State<SaveFastPage> {
   }) {
     return GestureDetector(
       onTap: () {
+        vibrate();
         selectedRating.value = ratingIndex;
       },
       child: Icon(

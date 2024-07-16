@@ -11,6 +11,10 @@ abstract interface class FastingLocalDataSource {
   Future<FastModel?> getLastFast();
 
   Future<List<FastModel>> getAllFasts();
+
+  Future deleteFast(int id);
+
+  Future resetData();
 }
 
 class FastingLocalDataSourceImpl implements FastingLocalDataSource {
@@ -64,6 +68,28 @@ class FastingLocalDataSourceImpl implements FastingLocalDataSource {
           .filter()
           .statusEqualTo(FastStatus.finished)
           .findAll();
+    } catch (e) {
+      throw KServerException(e.toString());
+    }
+  }
+
+  @override
+  Future deleteFast(int id) async {
+    try {
+      await isarInstance.writeTxn(() async {
+        await isarInstance.fastModels.delete(id);
+      });
+    } catch (e) {
+      throw KServerException(e.toString());
+    }
+  }
+
+  @override
+  Future resetData() async {
+    try {
+      await isarInstance.writeTxn(() async {
+        await isarInstance.clear();
+      });
     } catch (e) {
       throw KServerException(e.toString());
     }

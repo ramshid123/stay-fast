@@ -98,4 +98,24 @@ class FastingRepositoryImpl implements FastingRepository {
       return left(KFailure(e.error));
     }
   }
+
+  @override
+  Future<Either<KFailure, void>> deleteFast(int id) async {
+    try {
+      await fastingLocalDataSource.deleteFast(id);
+      return right(null);
+    } on KServerException catch (e) {
+      return left(KFailure(e.error));
+    }
+  }
+
+  @override
+  Future<Either<KFailure, void>> resetData() async {
+    try {
+      await fastingLocalDataSource.resetData();
+      return right(null);
+    } on KServerException catch (e) {
+      return left(KFailure(e.error));
+    }
+  }
 }

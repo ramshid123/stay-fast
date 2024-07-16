@@ -14,7 +14,12 @@ class AppTheme {
       );
 
   static final darkMode = ThemeData.dark().copyWith(
-    textTheme: GoogleFonts.poppinsTextTheme(),
+    // textTheme: GoogleFonts.poppinsTextTheme(),
+    pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()}),
+    textTheme: ThemeData.dark()
+        .textTheme
+        .apply(fontFamily: GoogleFonts.getFont('Poppins').fontFamily),
     scaffoldBackgroundColor: ColorConstantsDark.backgroundColor,
     appBarTheme: AppBarTheme(
       centerTitle: true,

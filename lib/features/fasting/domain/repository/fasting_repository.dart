@@ -32,4 +32,8 @@ abstract interface class FastingRepository {
   });
 
   Future<Either<KFailure, List<FastEntity>>> getAllFastsDetails();
+
+  Future<Either<KFailure, void>> deleteFast(int id);
+
+  Future<Either<KFailure, void>> resetData();
 }

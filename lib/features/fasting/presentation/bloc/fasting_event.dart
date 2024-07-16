@@ -30,6 +30,8 @@ final class FastingEventUpdateFast extends FastingEvent {
 
 final class FastingEventStartFast extends FastingEvent {}
 
+final class FastingEventResetData extends FastingEvent {}
+
 final class FastingEventFinishFast extends FastingEvent {}
 
 final class FastingEventCheckFast extends FastingEvent {}
@@ -41,3 +43,9 @@ final class FastingEventSelectJournalDate extends FastingEvent {
 }
 
 final class FastingEventGetAllFasts extends FastingEvent {}
+
+final class FastingEventDeleteFast extends FastingEvent {
+  final int id;
+
+  FastingEventDeleteFast(this.id);
+}

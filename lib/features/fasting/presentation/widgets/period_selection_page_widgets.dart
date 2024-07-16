@@ -1,6 +1,7 @@
 import 'package:fasting_app/core/constants/fasting_periods.dart';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/theme/palette.dart';
+import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,10 @@ class PeriodSelectionPageWidgets {
       {required int fast, required int? eat, required BuildContext context}) {
     return GestureDetector(
       onTap: () {
+        vibrate();
         context.read<FastingBloc>().add(FastingEventChangeFastPeriod(
             FastingTimeRatioEntity(fast: fast, eat: eat)));
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(FastingTimeRatioEntity(fast: fast, eat: eat));
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),

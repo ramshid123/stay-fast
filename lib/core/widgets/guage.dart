@@ -37,9 +37,13 @@ class KustomGuage extends StatefulWidget {
 }
 
 class KustomGuageState extends State<KustomGuage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _onGoingAnimationController;
+
   late Animation<double> _animation;
+  final List<Animation> _onGoingAnimation = [];
+  bool _isOnGoingAnimationControllerDisposed = false;
 
   late Color? _backgroundColor;
   late Color? _guageIndicatorColor;
@@ -94,15 +98,41 @@ class KustomGuageState extends State<KustomGuage>
       ..addListener(() {
         setState(() {});
       });
+    _onGoingAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 2000));
+    _onGoingAnimation.add(Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: _onGoingAnimationController,
+            curve: const Interval(0.0, 0.8, curve: Curves.easeInOutCubic))));
+
+    _onGoingAnimation.add(Tween<double>(begin: 1.0, end: 0.0).animate(
+        CurvedAnimation(
+            parent: _onGoingAnimationController,
+            curve: const Interval(0.4, 1.0, curve: Curves.linear))));
 
     _controller.forward();
+
+    onGoingAnimationCallback();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _isOnGoingAnimationControllerDisposed = true;
+    _onGoingAnimationController.dispose();
     guageValueNotifier.removeListener(_valueChanged);
     super.dispose();
+  }
+
+  Future onGoingAnimationCallback() async {
+    while (true) {
+      if (_isOnGoingAnimationControllerDisposed) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+      _onGoingAnimationController.value = 0;
+      await _onGoingAnimationController.forward();
+    }
   }
 
   void _valueChanged() {
@@ -133,6 +163,28 @@ class KustomGuageState extends State<KustomGuage>
       child: Stack(
         alignment: Alignment.center,
         children: [
+          AnimatedBuilder(
+              animation: _onGoingAnimation[1],
+              builder: (context, _) {
+                return Opacity(
+                  opacity: _onGoingAnimation[1].value,
+                  child: Transform.rotate(
+                    // angle: (math.pi / 5) * 6,
+                    angle: (0.2 * math.pi) * 6,
+                    child: SizedBox(
+                      height: widget.height.r,
+                      width: widget.width.r,
+                      child: CircularProgressIndicator(
+                        strokeWidth: widget.strokeWidth.r,
+                        strokeCap: StrokeCap.round,
+                        color: widget.foregroundColor.withOpacity(0.3),
+                        value: _onGoingAnimation[0].value * 0.8,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+
           Transform.rotate(
             // angle: (math.pi / 5) * 6,
             angle: (0.2 * math.pi) * 6,
@@ -161,6 +213,7 @@ class KustomGuageState extends State<KustomGuage>
               ),
             ),
           ),
+
           // the white indicators
           for (int i = 1; i <= 15; i++)
             Transform.rotate(
@@ -213,7 +266,7 @@ class KustomGuageState extends State<KustomGuage>
                     kText(
                         timeValueNotifier.value.inHours > 0
                             ? 'Completed'
-                            : '${timeValueNotifier.value.inHours.abs()}h ${timeValueNotifier.value.inMinutes.remainder(60).abs()}m ${timeValueNotifier.value.inSeconds.remainder(60).abs()}s',
+                            : '${timeValueNotifier.value.inHours.abs()}h ${timeValueNotifier.value.inMinutes.remainder(60).abs()}m',
                         fontSize: 13,
                         color: ColorConstantsDark.buttonBackgroundColor
                             .withOpacity(0.5)),
@@ -280,14 +333,17 @@ class KustomGuageState extends State<KustomGuage>
             //   ),
             // ),
           ),
-          Positioned(
-            bottom: 0,
-            child: _GuageOuterAnimation(
-              height: widget.height.r,
-              width: widget.width.r,
-              strokeWidth: widget.strokeWidth.r,
-            ),
-          )
+
+          // Outer Animation
+
+          // Positioned(
+          //   bottom: 0,
+          //   child: _GuageOuterAnimation(
+          //     height: widget.height.r,
+          //     width: widget.width.r,
+          //     strokeWidth: widget.strokeWidth.r,
+          //   ),
+          // )
         ],
       ),
     );

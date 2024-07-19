@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/payment_page/payment_failure_page.dart';
 import 'package:fasting_app/features/payment_page/payment_success_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -85,13 +82,17 @@ class _PaymentPageState extends State<PaymentPage> {
         amount: double.parse(amountTextController.text.replaceAll('₹', '')),
       );
 
-      if (response.status == UpiPaymentStatus.FAILURE) {
-        await Navigator.push(context, PaymentFailurePage.route());
-      } else {
-        await Navigator.push(context, PaymentSuccessPage.route());
+      if (mounted) {
+        if (response.status == UpiPaymentStatus.FAILURE) {
+          await Navigator.push(context, PaymentFailurePage.route());
+        } else {
+          await Navigator.push(context, PaymentSuccessPage.route());
+        }
       }
     } catch (e) {
-      await Navigator.push(context, PaymentFailurePage.route());
+      if (mounted) {
+        await Navigator.push(context, PaymentFailurePage.route());
+      }
     }
 
     isIntialised.value = true;
@@ -99,7 +100,6 @@ class _PaymentPageState extends State<PaymentPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     amountTextController.dispose();
     noteTextController.dispose();
     amountFocusNode.dispose();
@@ -249,7 +249,7 @@ class _PaymentPageState extends State<PaymentPage> {
                                   'UPI ID: ramshid.abc@okaxis',
                                   fontSize: 13,
                                 ),
-                                // const Spacer(),
+                                
                                 kHeight(30.h),
                                 Form(
                                   key: formkey,
@@ -315,14 +315,14 @@ class _PaymentPageState extends State<PaymentPage> {
                                     cursorColor: ColorConstantsDark
                                         .buttonBackgroundColor,
                                     textAlign: TextAlign.center,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'Note',
                                     ),
                                   ),
                                 ),
                                 kHeight(30.h),
 
-                                // const Spacer(),
+                                
                                 for (var app in apps) payAppButton(app: app),
                                 kHeight(50.h),
                               ],
@@ -339,7 +339,7 @@ class _PaymentPageState extends State<PaymentPage> {
         valueListenable: selectedUpiApp,
         builder: (context, value, _) {
           return GestureDetector(
-            // onTap: () async => await initiateTransaction(app),
+            
             onTap: () => selectedUpiApp.value = app,
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 25.w),

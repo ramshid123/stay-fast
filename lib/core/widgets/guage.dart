@@ -75,9 +75,6 @@ class KustomGuageState extends State<KustomGuage>
 
       timeValueNotifier.value =
           Duration(seconds: timeValueNotifier.value.inSeconds + 1);
-      // if (guageValueNotifier.value >= 1.0) {
-      // timer.cancel();
-      // }
     });
 
     super.initState();
@@ -169,7 +166,6 @@ class KustomGuageState extends State<KustomGuage>
                 return Opacity(
                   opacity: _onGoingAnimation[1].value,
                   child: Transform.rotate(
-                    // angle: (math.pi / 5) * 6,
                     angle: (0.2 * math.pi) * 6,
                     child: SizedBox(
                       height: widget.height.r,
@@ -186,7 +182,6 @@ class KustomGuageState extends State<KustomGuage>
               }),
 
           Transform.rotate(
-            // angle: (math.pi / 5) * 6,
             angle: (0.2 * math.pi) * 6,
             child: SizedBox(
               height: widget.height.r,
@@ -200,7 +195,6 @@ class KustomGuageState extends State<KustomGuage>
             ),
           ),
           Transform.rotate(
-            // angle: (math.pi / 5) * 6,
             angle: (0.2 * math.pi) * 6,
             child: SizedBox(
               height: widget.height.r,
@@ -214,7 +208,6 @@ class KustomGuageState extends State<KustomGuage>
             ),
           ),
 
-          // the white indicators
           for (int i = 1; i <= 15; i++)
             Transform.rotate(
               angle: (i * (math.pi / 9)) + (math.pi / 5) * 5.55,
@@ -286,7 +279,6 @@ class KustomGuageState extends State<KustomGuage>
                     child: CircularProgressIndicator(
                       strokeWidth: widget.strokeWidth.r,
                       strokeCap: StrokeCap.round,
-                      // color: widget.backgroundColor,
                       color: ColorConstantsDark.container2Color,
                       value: 0.1,
                     ),
@@ -303,111 +295,9 @@ class KustomGuageState extends State<KustomGuage>
                 ),
               ],
             ),
-            // child: ElevatedButton.icon(
-            //   onPressed: () async =>
-            //       await Navigator.of(context).push(PeriodSelectionPage.route()),
-            //   icon: Icon(
-            //     FontAwesomeIcons.pen,
-            //     size: 13.r,
-            //   ),
-            //   label: BlocBuilder<FastingBloc, FastingState>(
-            //     buildWhen: ((previous, current) {
-            //       if (current is FastingStateSelectedTimeRatio) {
-            //         return true;
-            //       }
-            //       return false;
-            //     }),
-            //     builder: (context, state) {
-            //       if (state is! FastingStateSelectedTimeRatio) {
-            //         return Container();
-            //       }
-
-            //       return kText(
-            //         '${state.fastingTimeRatio.fast}:${state.fastingTimeRatio.eat}',
-            //         letterSpacing: 1,
-            //       );
-            //     },
-            //   ),
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: ColorConstantsDark.container2Color,
-            //   ),
-            // ),
           ),
-
-          // Outer Animation
-
-          // Positioned(
-          //   bottom: 0,
-          //   child: _GuageOuterAnimation(
-          //     height: widget.height.r,
-          //     width: widget.width.r,
-          //     strokeWidth: widget.strokeWidth.r,
-          //   ),
-          // )
         ],
       ),
     );
-  }
-}
-
-class _GuageOuterAnimation extends StatefulWidget {
-  final double height;
-  final double width;
-  final double strokeWidth;
-  const _GuageOuterAnimation(
-      {required this.height, required this.width, required this.strokeWidth});
-
-  @override
-  State<_GuageOuterAnimation> createState() => __GuageOuterAnimationState();
-}
-
-class __GuageOuterAnimationState extends State<_GuageOuterAnimation>
-    with SingleTickerProviderStateMixin {
-  late AnimationController animController;
-  late Animation animation;
-
-  @override
-  void initState() {
-    animController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 5));
-    animation =
-        CurvedAnimation(parent: animController, curve: Curves.easeInOutQuad);
-
-    animController.repeat(reverse: true);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    animController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-        animation: animation,
-        builder: (context, value) {
-          return SizedBox(
-            height: widget.height,
-            width: widget.width,
-            child: Transform.scale(
-              scale: 1.2,
-              child: Transform.rotate(
-                angle: 0.7 * (2 * math.pi) * animation.value,
-                child: Transform.rotate(
-                  angle: ((0.4 * math.pi) * 3) - (0.0 * math.pi),
-                  child: CircularProgressIndicator(
-                    strokeWidth: widget.strokeWidth * 0.4,
-                    strokeCap: StrokeCap.round,
-                    // color: widget.backgroundColor,
-                    color: ColorConstantsDark.container2Color,
-                    value: 0.1,
-                  ),
-                ),
-              ),
-            ),
-          );
-        });
   }
 }

@@ -6,7 +6,6 @@ String formatDateTime(DateTime dateTime, {bool isTimeNeeded = true}) {
   DateFormat fullDateFormat =
       isTimeNeeded ? DateFormat('EEE MMM d, h:mm a') : DateFormat('EEE MMM d');
 
-  // Check if the given dateTime is today
   if (now.year == dateTime.year &&
       now.month == dateTime.month &&
       now.day == dateTime.day) {

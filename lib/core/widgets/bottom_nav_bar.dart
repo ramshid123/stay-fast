@@ -63,9 +63,7 @@ Widget _bottomNavBarItem({
       onTap: isCurrentPage
           ? null
           : () async {
-              // await HapticFeedback.vibrate();
-
-               vibrate();
+              vibrate();
               await Navigator.of(context)
                   .pushAndRemoveUntil(route, (route) => false);
             },

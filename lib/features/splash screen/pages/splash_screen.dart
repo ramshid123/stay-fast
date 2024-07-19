@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:fasting_app/core/animations/opacity_translate_y.dart';
 import 'package:fasting_app/core/shared_preferences_strings/shared_pref_strings.dart';
@@ -7,7 +6,6 @@ import 'package:fasting_app/core/utils/show_notification.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/home_page.dart';
 import 'package:fasting_app/features/onboarding/pages/onboarding_page.dart';
-import 'package:fasting_app/features/onboarding/widgets/onboarding_widgets.dart';
 import 'package:fasting_app/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     _animationController1.dispose();
     _animationController2.dispose();
     super.dispose();
@@ -60,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
       await initialize();
     });
 
-    // initialize();
+    
     super.initState();
   }
 

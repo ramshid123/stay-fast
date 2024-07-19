@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fasting_app/core/shared_preferences_strings/shared_pref_strings.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/vibrate.dart';
@@ -7,7 +5,6 @@ import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/home_page.dart';
 import 'package:fasting_app/init_dependencies.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,8 +78,10 @@ class _OnBoardingSubPageState extends State<OnBoardingSubPage>
   Future navigateToHomePage() async {
     final sfInstance = serviceLocator<SharedPreferences>();
     await sfInstance.setBool(SharedPrefStrings.isFirstTime, false);
-    await Navigator.of(context)
-        .pushAndRemoveUntil(HomePage.route(), (c) => false);
+    if (mounted) {
+      await Navigator.of(context)
+          .pushAndRemoveUntil(HomePage.route(), (c) => false);
+    }
   }
 
   Future exit(BuildContext context) async {
@@ -125,7 +124,7 @@ class _OnBoardingSubPageState extends State<OnBoardingSubPage>
                               height: 10.h,
                               width: 100.w,
                               decoration: BoxDecoration(
-                                // color: Colors.white,
+                                
                                 color: widget.index >= i
                                     ? Colors.white
                                     : Colors.white30,

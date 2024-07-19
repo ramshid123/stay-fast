@@ -1,4 +1,3 @@
-import 'package:fasting_app/core/services/background_service.dart';
 import 'package:fasting_app/features/fasting/data/data_source/fasting_local_data_source.dart';
 import 'package:fasting_app/features/fasting/data/models/fast_model.dart';
 import 'package:fasting_app/features/fasting/data/repository/fasting_repository_impl.dart';
@@ -11,8 +10,6 @@ import 'package:fasting_app/features/fasting/domain/use%20cases/reset_data.dart'
 import 'package:fasting_app/features/fasting/domain/use%20cases/save_fast.dart';
 import 'package:fasting_app/features/fasting/domain/use%20cases/update_fast.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';

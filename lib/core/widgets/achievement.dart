@@ -54,8 +54,7 @@ class _AchievementTimer extends StatefulWidget {
   final DateTime startTime;
   final FastingTimeRatioEntity fastingTimeRatio;
   const _AchievementTimer(
-      {super.key,
-      required this.duration,
+      {required this.duration,
       required this.startTime,
       required this.fastingTimeRatio});
 
@@ -122,13 +121,7 @@ class __AchievementTimerState extends State<_AchievementTimer> {
                 fontSize: 15,
                 color: ColorConstantsDark.buttonBackgroundColor,
               )
-              // kText(
-              //     timeValueNotifier.value.inHours > 0
-              //         ? 'Completed'
-              //         : '${timeValueNotifier.value.inHours.abs()}h ${timeValueNotifier.value.inMinutes.remainder(60).abs()}m ${timeValueNotifier.value.inSeconds.remainder(60).abs()}s',
-              //     fontSize: 13,
-              //     color: ColorConstantsDark.buttonBackgroundColor
-              //         .withOpacity(0.5)),
+      
             ],
           );
         });

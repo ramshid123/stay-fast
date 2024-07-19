@@ -1,10 +1,7 @@
-import 'dart:developer';
 
 import 'package:fasting_app/core/animations/opacity_translate_y.dart';
 import 'package:fasting_app/core/animations/translate_x.dart';
 import 'package:fasting_app/core/entities/fast_entity.dart';
-import 'package:fasting_app/core/entities/time_ration_entity.dart';
-import 'package:fasting_app/core/extensions/list_padding.dart';
 import 'package:fasting_app/core/shared_preferences_strings/shared_pref_strings.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/vibrate.dart';
@@ -14,7 +11,6 @@ import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart
 import 'package:fasting_app/features/fasting/presentation/pages/save_fast_page.dart';
 import 'package:fasting_app/features/fasting/presentation/widgets/journal_page_widgets.dart';
 import 'package:fasting_app/init_dependencies.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,8 +23,8 @@ import 'package:soundpool/soundpool.dart';
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
 
-  // static route() =>
-  //     MaterialPageRoute(builder: (context) => const JournalPage());
+  
+  
 
   static route() => PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -37,8 +33,8 @@ class JournalPage extends StatefulWidget {
           return SlideTransition(
             position: animation.drive(
               Tween<Offset>(
-                begin: const Offset(0, 1), // Start position (right to left)
-                end: Offset.zero, // End position (current position)
+                begin: const Offset(0, 1), 
+                end: Offset.zero, 
               ).chain(CurveTween(curve: Curves.easeInOut)),
             ),
             child: child,
@@ -52,9 +48,15 @@ class JournalPage extends StatefulWidget {
 }
 
 class _JournalPageState extends State<JournalPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation _animation;
+
+  late AnimationController _entryAnimationController;
+  late AnimationController _exitAnimationController;
+
+  late Animation _entryAnimation;
+  late Animation _exitAnimation;
 
   Soundpool? soundpool;
   int? soundId;
@@ -82,8 +84,6 @@ class _JournalPageState extends State<JournalPage>
 
   @override
   void initState() {
-    // TODO: implement initState
-
     checkForSoundPermission();
 
     _animationController =
@@ -93,16 +93,36 @@ class _JournalPageState extends State<JournalPage>
         CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
 
     _animationController.forward();
+
+    _entryAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+
+    _entryAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: _entryAnimationController, curve: Curves.easeInOut));
+
+    _exitAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+
+    _exitAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+        CurvedAnimation(
+            parent: _exitAnimationController, curve: Curves.easeInOut));
+
+    _entryAnimationController.reset();
+    _exitAnimationController.reset();
+    _entryAnimationController.forward();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     if (soundpool != null) {
       soundpool!.dispose();
     }
     _animationController.dispose();
+    _entryAnimationController.dispose();
+    _exitAnimationController.dispose();
     super.dispose();
   }
 
@@ -110,7 +130,6 @@ class _JournalPageState extends State<JournalPage>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      // extendBody: true,
       appBar: PreferredSize(
         preferredSize: Size(size.width, size.height / 2.8),
         child: SafeArea(
@@ -148,6 +167,9 @@ class _JournalPageState extends State<JournalPage>
                             return JournalScrollItem(
                               context: context,
                               soundpool: soundpool,
+                              entryAnimationController:
+                                  _entryAnimationController,
+                              exitAnimationController: _exitAnimationController,
                               soundId: soundId,
                               dateTime: DateTime(DateTime.now().year,
                                       DateTime.now().month, DateTime.now().day)
@@ -172,16 +194,31 @@ class _JournalPageState extends State<JournalPage>
                   builder: (context, state) {
                     return animatedOpacityTranslation(
                       animation: _animation,
-                      child: kText(
-                        state is! FastingStateSelectedJournalDate ||
-                                state.fastEntities.isEmpty
-                            ? 'No Records'
-                            : DateFormat("MMM d, yyyy")
-                                .format(state.fastEntities.first.savedOn!),
-                        // 'Droid Sans Mono', 'monospace', monospace
-                        // 'Today, 4:52 PM',
-                        fontSize: 23,
-                      ),
+                      child: AnimatedBuilder(
+                          animation: _entryAnimation,
+                          builder: (context, _) {
+                            return AnimatedBuilder(
+                                animation: _exitAnimation,
+                                builder: (context, _) {
+                                  return Opacity(
+                                    opacity: _entryAnimation.value,
+                                    child: Opacity(
+                                      opacity: _exitAnimation.value,
+                                      child: kText(
+                                        state is! FastingStateSelectedJournalDate ||
+                                                state.fastEntities.isEmpty
+                                            ? 'No Records'
+                                            : DateFormat("MMM d, yyyy").format(
+                                                state.fastEntities.first
+                                                    .savedOn!),
+                                        
+                                        
+                                        fontSize: 23,
+                                      ),
+                                    ),
+                                  );
+                                });
+                          }),
                     );
                   },
                 ),
@@ -205,133 +242,145 @@ class _JournalPageState extends State<JournalPage>
                 child: Column(
                   children: [
                     kHeight(10.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 25.w, vertical: 25.h),
-                      decoration: BoxDecoration(
-                        color: ColorConstantsDark.container1Color,
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              kText(
-                                'Fasts',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              kWidth(10.w),
-                              kText(
-                                '[0h 0m]',
-                                fontSize: 13,
-                                color: ColorConstantsDark.iconsColor,
-                              ),
-                              const Spacer(),
-                              // GestureDetector(
-                              //   onTap: () async {
-                              //   },
-                              //   child: Row(
-                              //     children: [
-                              //       kText(
-                              //         'Add fast',
-                              //         fontSize: 13,
-                              //         color: ColorConstantsDark.iconsColor,
-                              //       ),
-                              //       kWidth(10.w),
-                              //       Icon(
-                              //         FontAwesomeIcons.circlePlus,
-                              //         size: 17.r,
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                          BlocBuilder<FastingBloc, FastingState>(
-                            buildWhen: (previous, current) {
-                              if (current is FastingStateSelectedJournalDate) {
-                                return true;
-                              }
-                              return false;
-                            },
-                            builder: (context, state) {
-                              List<FastEntity> fastEntities = [];
-                              if (state is FastingStateSelectedJournalDate) {
-                                fastEntities = state.fastEntities;
-                              }
-                              return Column(
-                                children: [
-                                  if (fastEntities.isEmpty) ...[
-                                    kHeight(20.h),
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: kText(
-                                        'No fasts for the day',
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                    ),
-                                    kHeight(20.h)
-                                  ] else
-                                    for (var fast in fastEntities)
-                                      _fastItem(fast),
-                                ],
+                    BlocBuilder<FastingBloc, FastingState>(
+                      buildWhen: (previous, current) {
+                        if (current is FastingStateSelectedJournalDate) {
+                          return true;
+                        }
+                        return false;
+                      },
+                      builder: (context, state) {
+                        List<FastEntity> fastEntities = [];
+                        int totalFastingTime = 0;
+                        if (state is FastingStateSelectedJournalDate) {
+                          fastEntities = state.fastEntities;
+                          for (var fast in fastEntities) {
+                            totalFastingTime +=
+                                fast.completedDurationInMilliseconds!;
+                          }
+                        }
+
+                        return AnimatedBuilder(
+                            animation: _entryAnimation,
+                            builder: (context, _) {
+                              return Transform.translate(
+                                offset: Offset(
+                                    size.width * (_entryAnimation.value), 0.0),
+                                child: AnimatedBuilder(
+                                    animation: _exitAnimation,
+                                    builder: (context, _) {
+                                      return Transform.translate(
+                                        offset: Offset(
+                                            -size.width * _exitAnimation.value,
+                                            0.0),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 25.w, vertical: 25.h),
+                                          decoration: BoxDecoration(
+                                            color: ColorConstantsDark
+                                                .container1Color,
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  kText(
+                                                    'Fasts',
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  kWidth(10.w),
+                                                  kText(
+                                                    
+                                                    '[${Duration(milliseconds: totalFastingTime).inHours}h ${Duration(milliseconds: totalFastingTime).inMinutes.remainder(60)}m]',
+                                                    fontSize: 13,
+                                                    color: ColorConstantsDark
+                                                        .iconsColor,
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  if (fastEntities.isEmpty) ...[
+                                                    kHeight(20.h),
+                                                    Align(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: kText(
+                                                        'No fasts for the day',
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                      ),
+                                                    ),
+                                                    kHeight(20.h)
+                                                  ] else
+                                                    for (var fast
+                                                        in fastEntities)
+                                                      _fastItem(fast),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }),
                               );
-                            },
-                          ),
-                        ],
-                      ),
+                            });
+                      },
                     ),
                     kHeight(20.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 25.w, vertical: 25.h),
-                      decoration: BoxDecoration(
-                        color: ColorConstantsDark.container1Color,
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              kText(
-                                'Weight',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              const Spacer(),
-                              CircleAvatar(
-                                backgroundColor: ColorConstantsDark.iconsColor
-                                    .withOpacity(0.1),
-                                radius: 15.r,
-                                child: Icon(
-                                  FontAwesomeIcons.pen,
-                                  size: 14.r,
-                                ),
-                              ),
-                            ],
-                          ),
-                          kHeight(20.h),
-                          kText(
-                            'No weight recorded',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w300,
-                          ),
-                          kHeight(20.h),
-                          Container(
-                            height: 10.h,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: ColorConstantsDark.iconsColor
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(50.r),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     kHeight(20.h),
                   ],
                 ),
@@ -343,74 +392,74 @@ class _JournalPageState extends State<JournalPage>
     );
   }
 
-  Widget _scrollItem({
-    required DateTime dateTime,
-    required BuildContext context,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        vibrate();
-        context
-            .read<FastingBloc>()
-            .add(FastingEventSelectJournalDate(dateTime));
-      },
-      child: BlocBuilder<FastingBloc, FastingState>(
-        builder: (context, state) {
-          bool isSelected = false;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-          if (state is FastingStateSelectedJournalDate) {
-            if (state.selectedDate == dateTime) {
-              isSelected = true;
-            }
-          }
+  
+  
+  
+  
+  
 
-          // log('hours: $hours\nlength: ${(state as FastingStateJournalItem).fastEntities.length}');
+  
 
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
-            margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? ColorConstantsDark.buttonBackgroundColor
-                  : ColorConstantsDark.backgroundColor,
-              borderRadius: BorderRadius.circular(15.r),
-            ),
-            child: RotatedBox(
-              quarterTurns: -1,
-              child: Column(
-                children: [
-                  kText(DateFormat('E').format(dateTime),
-                      fontSize: 13,
-                      color: isSelected
-                          ? ColorConstantsDark.container1Color
-                          : ColorConstantsDark.iconsColor),
-                  kText(DateFormat('d').format(dateTime),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? ColorConstantsDark.container1Color
-                          : ColorConstantsDark.iconsColor),
-                  kText(DateFormat('MMM').format(dateTime),
-                      fontSize: 13,
-                      color: isSelected
-                          ? ColorConstantsDark.container1Color
-                          : ColorConstantsDark.iconsColor),
-                  kHeight(8.h),
-                  kText(
-                    '--',
-                    fontSize: 13,
-                    color: isSelected
-                        ? ColorConstantsDark.container1Color
-                        : ColorConstantsDark.iconsColor,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   Widget _ratingEmoji({
     required IconData icon,
@@ -453,7 +502,7 @@ class _JournalPageState extends State<JournalPage>
             children: [
               kText(
                 '${fastEntity.fastingTimeRatio!.fast} : ${fastEntity.fastingTimeRatio!.eat} fast',
-                // '11:13 fast',
+                
                 fontSize: 17,
                 fontWeight: FontWeight.w500,
               ),
@@ -473,11 +522,18 @@ class _JournalPageState extends State<JournalPage>
                     savedOn: fastEntity.savedOn,
                   ));
                   await Future.delayed(const Duration(milliseconds: 100));
-                  context
-                      .read<FastingBloc>()
-                      .add(FastingEventSelectJournalDate(date as DateTime));
+                  if (context.mounted) {
+                    context
+                        .read<FastingBloc>()
+                        .add(FastingEventSelectJournalDate(date as DateTime));
+                  }
                 },
-                child: SizedBox(
+                child: Container(
+                  padding: EdgeInsets.all(10.r),
+                  decoration: const BoxDecoration(
+                    color: ColorConstantsDark.container2Color,
+                    shape: BoxShape.circle,
+                  ),
                   child: Icon(
                     FontAwesomeIcons.pen,
                     size: 13.r,
@@ -486,7 +542,7 @@ class _JournalPageState extends State<JournalPage>
               ),
               const Spacer(),
               kText(
-                  // '0h 0m',
+                  
                   '${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inHours}h ${Duration(milliseconds: fastEntity.completedDurationInMilliseconds!).inMinutes.remainder(60)}m'),
             ],
           ),
@@ -504,7 +560,7 @@ class _JournalPageState extends State<JournalPage>
                       ),
                       kWidth(5.w),
                       kText(
-                        // 'Today 4:53 PM',
+                        
                         '${DateTime(fastEntity.startTime!.year, fastEntity.startTime!.month, fastEntity.startTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.startTime!)} ${DateFormat('jm').format(fastEntity.startTime!)}',
                         fontSize: 12,
                         letterSpacing: 0.5,
@@ -520,7 +576,7 @@ class _JournalPageState extends State<JournalPage>
                       ),
                       kWidth(5.w),
                       kText(
-                        // 'Today 10:12 PM',
+                        
                         '${DateTime(fastEntity.endTime!.year, fastEntity.endTime!.month, fastEntity.endTime!.day) == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day) ? 'Today' : DateFormat('MMM d').format(fastEntity.endTime!)} ${DateFormat('jm').format(fastEntity.endTime!)}',
                         fontSize: 12,
                         letterSpacing: 0.5,

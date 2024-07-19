@@ -1,5 +1,3 @@
-import 'dart:developer';
-import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fasting_app/core/theme/palette.dart';
@@ -96,9 +94,7 @@ class SettingsPageWidgets {
       padding: EdgeInsets.symmetric(vertical: 10.h),
       child: InkWell(
         onTap: () async {
-          if (await canLaunchUrl(Uri.parse(url))) {
-            await launchUrl(Uri.parse(url));
-          }
+          await launchUrl(Uri.parse(url));
         },
         child: Row(
           children: [

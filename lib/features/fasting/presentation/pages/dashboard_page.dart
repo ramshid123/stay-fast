@@ -1,4 +1,4 @@
-// import 'dart:math';
+
 
 import 'package:fasting_app/core/animations/opacity_translate_y.dart';
 import 'package:fasting_app/core/theme/palette.dart';
@@ -13,13 +13,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
 class DashBoardPage extends StatefulWidget {
   const DashBoardPage({super.key});
 
-  // static route() =>
-  //     MaterialPageRoute(builder: (context) => const DashBoardPage());
 
   static route() => PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -28,8 +25,8 @@ class DashBoardPage extends StatefulWidget {
           return SlideTransition(
             position: animation.drive(
               Tween<Offset>(
-                begin: const Offset(1, 0), // Start position (right to left)
-                end: Offset.zero, // End position (current position)
+                begin: const Offset(1, 0), 
+                end: Offset.zero, 
               ).chain(CurveTween(curve: Curves.easeInOut)),
             ),
             child: child,
@@ -44,8 +41,6 @@ class DashBoardPage extends StatefulWidget {
 
 class _DashBoardPageState extends State<DashBoardPage>
     with SingleTickerProviderStateMixin {
-  // int recordedLongestFast = 0;
-  // List<FastEntity> fastList = [];
 
   late AnimationController _animationController;
   late List<Animation> _animations;
@@ -56,16 +51,6 @@ class _DashBoardPageState extends State<DashBoardPage>
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 2000));
 
-    // const numberOfAnimations = 4;
-    // _animations = List.generate(4, (index) {
-    //   return Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //       parent: _animationController,
-    //       curve: Interval(
-    //         index * (1 / numberOfAnimations),
-    //         (index +0.2) * (1 / numberOfAnimations),
-    //         curve: Curves.easeInOut,
-    //       )));
-    // });
 
     _animations = [];
 
@@ -87,7 +72,6 @@ class _DashBoardPageState extends State<DashBoardPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _animationController.dispose();
     super.dispose();
   }
@@ -153,18 +137,21 @@ class _DashBoardPageState extends State<DashBoardPage>
                       _countDataContainer(
                         title: 'Longest Fast',
                         data:
-                            // '${Duration(milliseconds: state.longestFast).inHours}h'),
                             formatDuration(
                                 Duration(milliseconds: state.longestFast)),
                         animation: _animations[0],
                       ),
+                
                       _countDataContainer(
                         title: 'Total fasting time',
-                        data: formatDuration(
-                            Duration(milliseconds: state.totalFastingHours)),
+                        data: Duration(milliseconds: state.totalFastingHours)
+                                    .inHours >
+                                1000
+                            ? '${Duration(milliseconds: state.totalFastingHours).inHours ~/ 1000}k hrs'
+                            : formatDuration(Duration(
+                                milliseconds: state.totalFastingHours)),
                         animation: _animations[1],
                       ),
-                      // data: '${state.totalFastingHours}h'),
                       _countDataContainer(
                         title: 'Days with fast',
                         data: state.daysWithFast.toString(),
@@ -195,15 +182,7 @@ class _DashBoardPageState extends State<DashBoardPage>
                             fontWeight: FontWeight.w600,
                           ),
                           const Spacer(),
-                          // kText(
-                          //   'Timeline',
-                          //   fontSize: 13,
-                          // ),
-                          // kWidth(10.w),
-                          // Icon(
-                          //   FontAwesomeIcons.chevronRight,
-                          //   size: 16.r,
-                          // ),
+                   
                         ],
                       ),
                       kHeight(20.h),
@@ -229,12 +208,12 @@ class _DashBoardPageState extends State<DashBoardPage>
                               SizedBox(
                                 height: 260.h,
                                 child: Column(
-                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  
                                   children: [
                                     kText(
                                       formatDuration(Duration(
                                           milliseconds: state.longestFast)),
-                                      // '24',
+                                      
                                       fontSize: 11,
                                       color: ColorConstantsDark.iconsColor
                                           .withOpacity(0.7),
@@ -255,7 +234,7 @@ class _DashBoardPageState extends State<DashBoardPage>
                                       color: ColorConstantsDark.iconsColor
                                           .withOpacity(0.7),
                                     ),
-                                    // const Spacer(),
+                                    
                                     kText(
                                       '',
                                       fontSize: 11,
@@ -314,7 +293,7 @@ class _DashBoardPageState extends State<DashBoardPage>
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
                                         reverse: true,
-                                        // itemCount: 20,
+                                        
                                         shrinkWrap: true,
                                         itemBuilder: (context, index) {
                                           final dateTime = DateTime(
@@ -361,58 +340,58 @@ class _DashBoardPageState extends State<DashBoardPage>
     );
   }
 
-  Widget _graphItem({
-    required DateTime dateTime,
-    required double value,
-  }) {
-    return Column(
-      children: [
-        Expanded(
-          child: LayoutBuilder(builder: (context, c) {
-            return Container(
-              margin: EdgeInsets.symmetric(horizontal: 5.w),
-              width: 30.w,
-              decoration: BoxDecoration(
-                color:
-                    ColorConstantsDark.buttonBackgroundColor.withOpacity(0.3),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(50.r)),
-              ),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: (value / 100) * c.maxHeight.h,
-                  width: 30.w,
-                  decoration: BoxDecoration(
-                    color: ColorConstantsDark.buttonBackgroundColor,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(50.r)),
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-        Container(
-          width: 40.w,
-          height: 1.h,
-          color: ColorConstantsDark.iconsColor.withOpacity(0.5),
-        ),
-        kText(
-          DateFormat('E').format(dateTime),
-          fontSize: 11,
-        ),
-        kText(
-          DateFormat('d').format(dateTime),
-          fontSize: 11,
-        ),
-        kText(
-          DateFormat('MMM').format(dateTime),
-          fontSize: 9,
-          color: ColorConstantsDark.iconsColor.withOpacity(0.7),
-        ),
-      ],
-    );
-  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   Widget _countDataContainer({
     required String title,

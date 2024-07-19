@@ -55,8 +55,6 @@ Future<void> showProgressBarNotification() async {
 
   if (durationInMilliseconds == 0 || startTimeString.isEmpty) {
     return;
-    // durationInMilliseconds = const Duration(hours: 5).inMilliseconds;
-    // startTimeString = DateTime.now().toString();
   }
 
   final duration = Duration(milliseconds: durationInMilliseconds);
@@ -68,27 +66,6 @@ Future<void> showProgressBarNotification() async {
   ValueNotifier<Duration> timeValueNotifier =
       ValueNotifier(const Duration(seconds: 0));
 
-  // var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-  //   'progress channel',
-  //   'progress channel name',
-  //   channelDescription: 'progress channel description',
-  //   importance: Importance.max,
-  //   priority: Priority.high,
-  //   ongoing: true,
-  //   onlyAlertOnce: true,
-  //   showProgress: true,
-  //   maxProgress: 100,
-  //   progress: 0,
-  // );
-  // var platformChannelSpecifics =
-  //     NotificationDetails(android: androidPlatformChannelSpecifics);
-  // await flutterLocalNotificationsPlugin.show(
-  //   0,
-  //   'Progress Notification',
-  //   'Download in progress',
-  //   platformChannelSpecifics,
-  // );
-
   final rateOfChange = 1 / (duration.inSeconds);
 
   final elapsedSeconds = startTime.difference(DateTime.now()).inSeconds.abs();
@@ -99,7 +76,6 @@ Future<void> showProgressBarNotification() async {
       milliseconds: startTime.difference(DateTime.now()).inMilliseconds.abs() -
           duration.inMilliseconds);
 
-  // for (; guageValueNotifier.value <= 1.0;)
   while (guageValueNotifier.value <= 1.0) {
     await Future.delayed(const Duration(milliseconds: 1000), () async {
       if (guageValueNotifier.value <= 1.0) {
@@ -119,7 +95,6 @@ Future<void> showProgressBarNotification() async {
             channelDescription: 'progress channel description',
             importance: Importance.defaultImportance,
             priority: Priority.defaultPriority,
-            // ongoing: true,
             playSound: false,
             onlyAlertOnce: true,
             showProgress: true,

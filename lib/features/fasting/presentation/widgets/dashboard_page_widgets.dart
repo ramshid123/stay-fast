@@ -30,7 +30,7 @@ class _DashboardGraphItemState extends State<DashboardGraphItem>
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     _animationController =
         AnimationController(vsync: this, duration: animDuration);
     _animationController.value = 1;
@@ -43,7 +43,7 @@ class _DashboardGraphItemState extends State<DashboardGraphItem>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     _animationController.dispose();
     super.dispose();
   }

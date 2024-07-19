@@ -13,12 +13,16 @@ class JournalScrollItem extends StatefulWidget {
   final BuildContext context;
   final Soundpool? soundpool;
   final int? soundId;
+  final AnimationController entryAnimationController;
+  final AnimationController exitAnimationController;
   const JournalScrollItem({
     super.key,
     required this.dateTime,
     required this.soundId,
     required this.soundpool,
     required this.context,
+    required this.entryAnimationController,
+    required this.exitAnimationController,
   });
 
   @override
@@ -62,11 +66,18 @@ class JournalScrollItemState extends State<JournalScrollItem>
               Transform.translate(
                 offset: Offset(-(size.height / 5.6) * _animation.value, 0),
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     vibrate();
-                    context
-                        .read<FastingBloc>()
-                        .add(FastingEventSelectJournalDate(widget.dateTime));
+                    widget.exitAnimationController.reset();
+                    await widget.exitAnimationController.forward();
+                    if (context.mounted) {
+                      context
+                          .read<FastingBloc>()
+                          .add(FastingEventSelectJournalDate(widget.dateTime));
+                    }
+                    widget.entryAnimationController.reset();
+                    widget.exitAnimationController.reset();
+                    await widget.entryAnimationController.forward();
                   },
                   child: BlocBuilder<FastingBloc, FastingState>(
                     builder: (context, state) {
@@ -78,7 +89,7 @@ class JournalScrollItemState extends State<JournalScrollItem>
                         }
                       }
 
-                      // log('hours: $hours\nlength: ${(state as FastingStateJournalItem).fastEntities.length}');
+                      
 
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 200),

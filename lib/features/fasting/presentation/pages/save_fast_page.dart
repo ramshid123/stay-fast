@@ -7,8 +7,6 @@ import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -191,8 +189,8 @@ class _SaveFastPageState extends State<SaveFastPage> {
               ),
               kHeight(2.h),
               kText(
-                // '0 minutes',
-                '${startTime.difference(endTime).inMinutes.remainder(60).abs()} minutes ${startTime.difference(endTime).inHours.abs() == 0 ? '' : '${startTime.difference(endTime).inHours.abs()} hours'}',
+                
+                '${startTime.difference(endTime).inHours.abs() == 0 ? '' : '${startTime.difference(endTime).inHours.abs()} hours'} ${startTime.difference(endTime).inMinutes.remainder(60).abs()} minutes',
                 color: ColorConstantsDark.textColor,
               ),
               kHeight(40.h),
@@ -209,44 +207,44 @@ class _SaveFastPageState extends State<SaveFastPage> {
                       'Start/Finish',
                       fontSize: 15,
                     ),
-                    kHeight(15.h),
+                    kHeight(20.h),
                     Row(
                       children: [
                         Icon(
                           FontAwesomeIcons.play,
                           size: 18.r,
                         ),
-                        kWidth(10.w),
+                        kWidth(15.w),
                         kText(
                           formatDateTime(startTime),
-                          // 'Today 4:53 PM',
+                          
                           fontSize: 13,
                         ),
-                        const Spacer(),
-                        Icon(
-                          FontAwesomeIcons.pen,
-                          size: 13.r,
-                        ),
+                        
+                        
+                        
+                        
+                        
                       ],
                     ),
-                    kHeight(10.h),
+                    kHeight(20.h),
                     Row(
                       children: [
                         Icon(
                           FontAwesomeIcons.flagCheckered,
                           size: 18.r,
                         ),
-                        kWidth(10.w),
+                        kWidth(15.w),
                         kText(
                           formatDateTime(endTime),
-                          // 'Today 4:53 PM',
+                          
                           fontSize: 13,
                         ),
-                        const Spacer(),
-                        Icon(
-                          FontAwesomeIcons.pen,
-                          size: 13.r,
-                        ),
+                        
+                        
+                        
+                        
+                        
                       ],
                     )
                   ],

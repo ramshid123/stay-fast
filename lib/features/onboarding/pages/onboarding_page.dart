@@ -1,9 +1,6 @@
-import 'dart:developer';
 
-import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/onboarding/pages/page_1.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
 
 class OnBoardingPage extends StatefulWidget {
   const OnBoardingPage({super.key});
@@ -17,19 +14,11 @@ class OnBoardingPage extends StatefulWidget {
 
 class _OnBoardingPageState extends State<OnBoardingPage> {
   final pageController = PageController();
-  // int pageIndex = 0;
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //     pageIndex++;
-      //     await pageController.animateToPage(pageIndex,
-      //         duration: const Duration(milliseconds: 400),
-      //         curve: Curves.easeInOut);
-      //   },
-      // ),
       body: PageView(
         controller: pageController,
         physics: const NeverScrollableScrollPhysics(),

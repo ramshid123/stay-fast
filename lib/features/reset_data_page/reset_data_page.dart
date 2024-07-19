@@ -2,7 +2,6 @@ import 'package:fasting_app/core/shared_preferences_strings/shared_pref_strings.
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/init_dependencies.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +21,7 @@ class ResetDataPage extends StatefulWidget {
 class _ResetDataPageState extends State<ResetDataPage> {
   @override
   void initState() {
-    // TODO: implement initState
+    
     Future.delayed(const Duration(seconds: 3), () async {
       final sf = serviceLocator<SharedPreferences>();
       await sf.clear();

@@ -92,10 +92,6 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
           }
           date = fast.savedOn!;
         }
-        // final totalFastingHours =
-        //     Duration(milliseconds: fastingDurationInMilliseconds)
-        //         .inHours; /
-
         final totalFastNo = r.length;
 
         emit(FastingStateAllFasts(
@@ -178,7 +174,6 @@ class FastingBloc extends Bloc<FastingEvent, FastingState> {
 
   Future _onFastingCheckFast(
       FastingEventCheckFast event, Emitter<FastingState> emit) async {
-    // emit(FastingStateLoading());
 
     final res = await _useCaseGetLastFast(const NoParams());
 

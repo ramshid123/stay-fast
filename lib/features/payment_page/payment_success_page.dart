@@ -26,7 +26,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 3));
 
@@ -61,7 +61,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     animationController.dispose();
     onGoingAnimationController.dispose();
     super.dispose();
@@ -215,10 +215,10 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                 animation: onGoingAnimation,
                 builder: (context, _) {
                   return Transform.scale(
-                    // scale: 1.0 *
-                    //     (isReverse
-                    //         ? (1 - (onGoingAnimation.value+0.2))
-                    //         : (onGoingAnimation.value+0.2)),
+                    
+                    
+                    
+                    
                     scale: (isReverse
                             ? ((1 - onGoingAnimation.value) / 4)
                             : onGoingAnimation.value / 4) +
@@ -226,7 +226,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                     child: Container(
                       height: height,
                       width: height,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: ColorConstantsDark.buttonBackgroundColor,
                         shape: BoxShape.circle,
                       ),

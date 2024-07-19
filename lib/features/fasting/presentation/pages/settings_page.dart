@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 
 import 'package:fasting_app/core/shared_preferences_strings/shared_pref_strings.dart';
@@ -9,9 +10,7 @@ import 'package:fasting_app/features/fasting/presentation/widgets/settings_page_
 import 'package:fasting_app/features/payment_page/payment_page.dart';
 import 'package:fasting_app/features/reset_data_page/reset_data_page.dart';
 import 'package:fasting_app/init_dependencies.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -86,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       width: 200.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),
                       decoration: BoxDecoration(
-                        // color: ColorConstantsDark.backgroundColor,
+                        
                         color: Colors.transparent,
                         border: Border.all(
                           width: 2.r,
@@ -157,7 +156,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     isNotificationAllowed.value =
         sf.getBool(SharedPrefStrings.isNotificationAllowed) ?? true;
 
@@ -192,7 +190,7 @@ class _SettingsPageState extends State<SettingsPage> {
               vibrate();
               Navigator.of(context).pop();
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back,
             ),
           ),
@@ -371,3 +369,5 @@ enum _ButtonType {
   arrowType,
   normalType,
 }
+
+

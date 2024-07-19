@@ -8,13 +8,11 @@ class AppTheme {
       OutlineInputBorder(
         borderRadius: BorderRadius.circular(15.r),
         borderSide: BorderSide(
-          // width: 2.w,
           color: color,
         ),
       );
 
   static final darkMode = ThemeData.dark().copyWith(
-    // textTheme: GoogleFonts.poppinsTextTheme(),
     pageTransitionsTheme: const PageTransitionsTheme(
         builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()}),
     textTheme: ThemeData.dark()

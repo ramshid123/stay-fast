@@ -19,20 +19,20 @@ class _OnBoardingListViewItemState extends State<OnBoardingListViewItem>
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1000));
 
-    // _animationController.value = 1;
+    
     _animation = Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
-    // _animationController.reverse();
+    
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     _animationController.dispose();
     super.dispose();
   }
@@ -78,8 +78,7 @@ class _OnBoardingListViewItemState extends State<OnBoardingListViewItem>
 class CustomScrollPhysics extends ScrollPhysics {
   final double velocityFactor;
 
-  CustomScrollPhysics({ScrollPhysics? parent, required this.velocityFactor})
-      : super(parent: parent);
+  const CustomScrollPhysics({super.parent, required this.velocityFactor});
 
   @override
   CustomScrollPhysics applyTo(ScrollPhysics? ancestor) {
@@ -89,7 +88,7 @@ class CustomScrollPhysics extends ScrollPhysics {
 
   @override
   double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
-    // Modify the offset based on the velocity factor
+    
     return offset * velocityFactor;
   }
 }

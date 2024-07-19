@@ -1,9 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
-import 'package:fasting_app/features/fasting/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,7 +24,7 @@ class _PaymentFailurePageState extends State<PaymentFailurePage>
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 3));
 
@@ -61,7 +59,7 @@ class _PaymentFailurePageState extends State<PaymentFailurePage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     animationController.dispose();
     onGoingAnimationController.dispose();
     super.dispose();
@@ -213,10 +211,10 @@ class _PaymentFailurePageState extends State<PaymentFailurePage>
                 animation: onGoingAnimation,
                 builder: (context, _) {
                   return Transform.scale(
-                    // scale: 1.0 *
-                    //     (isReverse
-                    //         ? (1 - (onGoingAnimation.value+0.2))
-                    //         : (onGoingAnimation.value+0.2)),
+                    
+                    
+                    
+                    
                     scale: (isReverse
                             ? ((1 - onGoingAnimation.value) / 4)
                             : onGoingAnimation.value / 4) +
@@ -224,7 +222,7 @@ class _PaymentFailurePageState extends State<PaymentFailurePage>
                     child: Container(
                       height: height,
                       width: height,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white30,
                         shape: BoxShape.circle,
                       ),

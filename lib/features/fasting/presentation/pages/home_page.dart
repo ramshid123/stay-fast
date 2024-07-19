@@ -1,21 +1,18 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ui';
 
+import 'package:fasting_app/core/animations/background_glow_button.dart';
 import 'package:fasting_app/core/animations/gravity_animation.dart';
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/enums/fast_status.dart';
 import 'package:fasting_app/core/enums/guage_status.dart';
-import 'package:fasting_app/core/funvas/rotating_dots.dart';
 import 'package:fasting_app/core/theme/palette.dart';
-import 'package:fasting_app/core/utils/format_datetime.dart';
 import 'package:fasting_app/core/utils/show_notification.dart';
 import 'package:fasting_app/core/utils/vibrate.dart';
 import 'package:fasting_app/core/widgets/achievement.dart';
 import 'package:fasting_app/core/widgets/bottom_nav_bar.dart';
 import 'package:fasting_app/core/widgets/cracker.dart';
 import 'package:fasting_app/core/widgets/guage.dart';
-import 'package:fasting_app/core/widgets/rotating_circle.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:fasting_app/features/fasting/presentation/bloc/fasting_bloc.dart';
 import 'package:fasting_app/features/fasting/presentation/pages/period_selection_page.dart';
@@ -23,21 +20,17 @@ import 'package:fasting_app/features/fasting/presentation/pages/save_fast_page.d
 import 'package:fasting_app/features/fasting/presentation/widgets/home_page_widgets.dart';
 import 'package:fasting_app/features/screenshot_page/screenshot_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:funvas/funvas.dart';
-import 'package:intl/intl.dart';
 import 'package:rive/rive.dart';
-import 'package:share_plus/share_plus.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
-  // static route() => MaterialPageRoute(builder: (context) => const HomePage());
+  
 
   static route() => PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -46,8 +39,8 @@ class HomePage extends StatefulWidget {
           return SlideTransition(
             position: animation.drive(
               Tween<Offset>(
-                begin: const Offset(-1, 0), // Start position (right to left)
-                end: Offset.zero, // End position (current position)
+                begin: const Offset(-1, 0), 
+                end: Offset.zero, 
               ).chain(CurveTween(curve: Curves.easeInOut)),
             ),
             child: child,
@@ -58,11 +51,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  // final startTime = DateTime(2024, 5, 20, 8, 0, 37);
-  // final startTime = DateTime.now();
-  // final duration = const Duration(hours: 13);
-  // var fastingTimeRatio = FastingTimeRatioEntity(fast: 13, eat: 11);
-  // GuageStatus guageStatus = GuageStatus.inactive;
+  
+  
+  
+  
+  
 
   late DateTime startTime;
   late DateTime endTime;
@@ -73,7 +66,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final scrollController = ScrollController();
 
   late SMIInput riveProgress;
-  // late TextValueRun riveText;
+  
 
   late Timer timer;
 
@@ -82,8 +75,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   List<Animation> tipsAnimations = [];
   List<Animation> pageAnimations = [];
-
-  final _repaintBoundaryKey = GlobalKey();
 
   void _scrollListener() {
     if (scrollController.position.pixels > 10) {
@@ -117,19 +108,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     tipsAnimations.add(Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
         parent: tipsAnimationController,
-        curve: Interval(0.0, 0.4, curve: Curves.easeInOut))));
+        curve: const Interval(0.0, 0.4, curve: Curves.easeInOut))));
 
     tipsAnimations.add(Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
         parent: tipsAnimationController,
-        curve: Interval(0.2, 0.6, curve: Curves.easeInOut))));
+        curve: const Interval(0.2, 0.6, curve: Curves.easeInOut))));
 
     tipsAnimations.add(Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
         parent: tipsAnimationController,
-        curve: Interval(0.4, 0.8, curve: Curves.easeInOut))));
+        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut))));
 
     tipsAnimations.add(Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
         parent: tipsAnimationController,
-        curve: Interval(0.6, 1.0, curve: Curves.easeInOut))));
+        curve: const Interval(0.6, 1.0, curve: Curves.easeInOut))));
 
     pageAnimationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
@@ -137,17 +128,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     pageAnimations.add(Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: pageAnimationController,
-            curve: Interval(0.0, 0.6, curve: Curves.easeInOut))));
+            curve: const Interval(0.0, 0.6, curve: Curves.easeInOut))));
 
     pageAnimations.add(Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: pageAnimationController,
-            curve: Interval(0.3, 0.9, curve: Curves.easeInOut))));
+            curve: const Interval(0.3, 0.9, curve: Curves.easeInOut))));
 
     pageAnimations.add(Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: pageAnimationController,
-            curve: Interval(0.4, 1.0, curve: Curves.easeInOut))));
+            curve: const Interval(0.4, 1.0, curve: Curves.easeInOut))));
 
     startTime = DateTime.now();
     fastingTimeRatio = FastingTimeRatioEntity(fast: 13, eat: 11);
@@ -173,7 +164,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     pageAnimationController.dispose();
     tipsAnimationController.dispose();
     if (riveLoadingController != null) {
@@ -189,17 +179,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Stack(
       children: [
         Scaffold(
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () async {
-          //     context.read<FastingBloc>().add(FastingEventSaveFast(
-          //           durationInMilliseconds:
-          //               const Duration(hours: 13).inMilliseconds,
-          //           fastingTimeRatio: FastingTimeRatioEntity(fast: 13, eat: 11),
-          //           startTime: DateTime.now().subtract(Duration(hours: 5)),
-          //           status: FastStatus.ongoing,
-          //         ));
-          //   },
-          // ),
+
           appBar: AppBar(
             centerTitle: true,
             title: AnimatedBuilder(
@@ -235,7 +215,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               }
 
               if (state is FastingStateCurrentFast) {
-                // log(state.fastEntity.toString());
+                
               }
 
               if (state is FastingStateSelectedTimeRatio) {
@@ -393,8 +373,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                         ColorConstantsDark
                                                             .buttonBackgroundColor
                                                             .withOpacity(0.2),
-                                                    // ColorConstantsDark
-                                                    //     .container2Color,
+                                                    
+                                                    
                                                     foregroundColor:
                                                         ColorConstantsDark
                                                             .buttonBackgroundColor,
@@ -417,9 +397,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   return SizedBox(
                                                     height: 300.h,
                                                     width: double.infinity,
-                                                    // child: FunvasContainer(
-                                                    //   funvas: RotatingSquaresFunvas(),
-                                                    // ),
+                                                    
+                                                    
+                                                    
                                                     child: Achievement(
                                                       duration: Duration(
                                                           milliseconds: state
@@ -432,7 +412,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                           .fastEntity!
                                                           .fastingTimeRatio!,
                                                     ),
-                                                    // child: kText('Completed'),
+                                                    
                                                   );
 
                                                 case GuageStatus.inactive:
@@ -453,10 +433,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                           if (timePeriod !=
                                                               null) {
-                                                            // riveText.text =
-                                                            //     '${(timePeriod as FastingTimeRatioEntity).fast} : ${(timePeriod).eat}';
-                                                            // riveText.text =
-                                                            //     '';
+                                                            
+                                                            
+                                                            
+                                                            
                                                             riveProgress.value =
                                                                 ((timePeriod as FastingTimeRatioEntity)
                                                                             .fast! /
@@ -486,13 +466,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                       riveController
                                                                           .findSMI(
                                                                               'Progress');
-                                                                  // riveText = artboard
-                                                                  //     .component(
-                                                                  //         'center_text_value');
-                                                                  // riveText.text =
-                                                                  //     '';
-                                                                  // riveText.text =
-                                                                  //     '${fastingTimeRatio.fast} : ${fastingTimeRatio.eat}';
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  
                                                                   riveProgress
                                                                           .value =
                                                                       (fastingTimeRatio.fast! /
@@ -509,8 +489,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                 Icon(
                                                                   Icons
                                                                       .timelapse_rounded,
-                                                                  // color: Colors
-                                                                  //     .white,
+                                                                  
+                                                                  
                                                                   color: ColorConstantsDark
                                                                       .iconsColor,
                                                                   size: 50.r,
@@ -531,7 +511,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                             100.r),
                                                                   ),
                                                                   child: kText(
-                                                                    // '13 : 11',
+                                                                    
                                                                     '${fastingTimeRatio.fast} : ${fastingTimeRatio.eat}',
                                                                     color: ColorConstantsDark
                                                                         .iconsColor,
@@ -554,132 +534,159 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                       ),
                                                     ),
                                                   );
-                                                // return Stack(
-                                                //   alignment: Alignment.center,
-                                                //   children: [
-                                                //     SizedBox(
-                                                //       height: 300.h,
-                                                //       width: double.infinity,
-                                                //       child: FunvasContainer(
-                                                //         funvas:
-                                                //             RotatingSquaresFunvas(),
-                                                //       ),
-                                                //     ),
-                                                //     Column(
-                                                //       children: [
-                                                //         ElevatedButton(
-                                                //           onPressed: () async =>
-                                                //               await Navigator.push(
-                                                //                   context,
-                                                //                   PeriodSelectionPage
-                                                //                       .route()),
-                                                //           child: kText(
-                                                //               '${fastingTimeRatio.fast}:${fastingTimeRatio.eat}'),
-                                                //         ),
-                                                //         kText('Inactive'),
-                                                //       ],
-                                                //     ),
-                                                //   ],
-                                                // );
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
                                               }
                                             },
                                           ),
                                         ],
                                       ),
                                       kHeight(50.h),
-                                      guageStatus == GuageStatus.inactive
-                                          ? ElevatedButton(
-                                              // onPressed: () async => await Navigator.of(context)
-                                              //     .push(SaveFastPage.route()),
-                                              onPressed: () async {
-                                                vibrate();
-                                                await pageAnimationController
-                                                    .reverse();
-                                                context.read<FastingBloc>().add(
-                                                    FastingEventSaveFast(
-                                                        startTime:
-                                                            DateTime.now(),
-                                                        durationInMilliseconds:
-                                                            Duration(
+                                      BackgroundGlowButton(
+                                        child: guageStatus ==
+                                                GuageStatus.inactive
+                                            ? ElevatedButton(
+                                                
+                                                
+                                                onPressed: () async {
+                                                  vibrate();
+                                                  await pageAnimationController
+                                                      .reverse();
+                                                  if (context.mounted) {
+                                                    context
+                                                        .read<FastingBloc>()
+                                                        .add(FastingEventSaveFast(
+                                                            startTime:
+                                                                DateTime.now(),
+                                                            durationInMilliseconds: Duration(
                                                                     hours: fastingTimeRatio
                                                                         .fast!)
                                                                 .inMilliseconds,
-                                                        fastingTimeRatio:
-                                                            fastingTimeRatio,
-                                                        status: FastStatus
-                                                            .ongoing));
+                                                            fastingTimeRatio:
+                                                                fastingTimeRatio,
+                                                            status: FastStatus
+                                                                .ongoing));
+                                                    context.read<FastingBloc>().add(
+                                                        FastingEventCheckFast());
+                                                  }
 
-                                                context.read<FastingBloc>().add(
-                                                    FastingEventCheckFast());
-                                                FlutterBackgroundService()
-                                                    .invoke('setAsBackground');
-                                                await invokeBackgroundNotificationService(
-                                                    duration: Duration(
-                                                        hours: fastingTimeRatio
-                                                            .fast!),
-                                                    startTime: DateTime.now());
-                                                await pageAnimationController
-                                                    .forward();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                fixedSize:
-                                                    Size(size.width, 50.h),
-                                                backgroundColor:
-                                                    ColorConstantsDark
+                                                  FlutterBackgroundService()
+                                                      .invoke(
+                                                          'setAsBackground');
+                                                  await invokeBackgroundNotificationService(
+                                                      duration: Duration(
+                                                          hours:
+                                                              fastingTimeRatio
+                                                                  .fast!),
+                                                      startTime:
+                                                          DateTime.now());
+                                                  await pageAnimationController
+                                                      .forward();
+                                                },
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                style: ElevatedButton.styleFrom(
+                                                  fixedSize:
+                                                      Size(size.width, 50.h),
+                                                  backgroundColor:
+                                                      ColorConstantsDark
+                                                          .backgroundColor,
+                                                  foregroundColor:
+                                                      ColorConstantsDark
+                                                          .buttonBackgroundColor,
+                                                  side: BorderSide(
+                                                    color: ColorConstantsDark
                                                         .buttonBackgroundColor,
-                                                foregroundColor:
-                                                    ColorConstantsDark
-                                                        .buttonForegroundColor,
-                                              ),
-                                              child: kText(
-                                                'Start Fast',
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          : ElevatedButton(
-                                              onPressed: () async {
-                                                vibrate();
-                                                await pageAnimationController
-                                                    .reverse();
-                                                await Navigator.of(context)
-                                                    .push(SaveFastPage.route(
-                                                  fastingTimeRatio: (state
-                                                          as FastingStateCurrentFast)
-                                                      .fastEntity!
-                                                      .fastingTimeRatio!,
-                                                  durationInMilliseconds: state
-                                                      .fastEntity!
-                                                      .durationInMilliseconds!,
-                                                  isarId:
-                                                      state.fastEntity!.isarId!,
-                                                  startTime: state
-                                                      .fastEntity!.startTime!,
-                                                ));
-                                                await pageAnimationController
-                                                    .forward();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                fixedSize:
-                                                    Size(size.width, 50.h),
-                                                backgroundColor:
-                                                    ColorConstantsDark
-                                                        .backgroundColor,
-                                                foregroundColor:
-                                                    ColorConstantsDark
+                                                    width: 3.r,
+                                                  ),
+                                                ),
+                                                child: kText(
+                                                  'Start Fast',
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            : ElevatedButton(
+                                                onPressed: () async {
+                                                  vibrate();
+                                                  await pageAnimationController
+                                                      .reverse();
+                                                  if (context.mounted) {
+                                                    await Navigator.of(context)
+                                                        .push(
+                                                            SaveFastPage.route(
+                                                      fastingTimeRatio: (state
+                                                              as FastingStateCurrentFast)
+                                                          .fastEntity!
+                                                          .fastingTimeRatio!,
+                                                      durationInMilliseconds: state
+                                                          .fastEntity!
+                                                          .durationInMilliseconds!,
+                                                      isarId: state
+                                                          .fastEntity!.isarId!,
+                                                      startTime: state
+                                                          .fastEntity!
+                                                          .startTime!,
+                                                    ));
+                                                  }
+                                                  await pageAnimationController
+                                                      .forward();
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  fixedSize:
+                                                      Size(size.width, 50.h),
+                                                  backgroundColor:
+                                                      ColorConstantsDark
+                                                          .backgroundColor,
+                                                  foregroundColor:
+                                                      ColorConstantsDark
+                                                          .buttonBackgroundColor,
+                                                  side: BorderSide(
+                                                    color: ColorConstantsDark
                                                         .buttonBackgroundColor,
-                                                side: BorderSide(
-                                                  color: ColorConstantsDark
-                                                      .buttonBackgroundColor,
-                                                  width: 3.r,
+                                                    width: 3.r,
+                                                  ),
+                                                ),
+                                                child: kText(
+                                                  'End Fast',
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 16,
                                                 ),
                                               ),
-                                              child: kText(
-                                                'End Fast',
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16,
-                                              ),
-                                            ),
+                                      ),
                                       kHeight(20.h),
                                       Visibility(
                                         visible:
@@ -694,13 +701,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 HomePageWidgets.timerSetButton(
                                                   title: 'Start',
                                                   dateTime: startTime,
-                                                  // value: 'Today 4:53 PM',
+                                                  
                                                   index: 0,
                                                 ),
                                                 kWidth(20.w),
                                                 HomePageWidgets.timerSetButton(
                                                   title: 'End',
-                                                  // value: 'Thu May 16, 3:53 AM',
+                                                  
                                                   dateTime: endTime,
                                                   index: 1,
                                                 ),

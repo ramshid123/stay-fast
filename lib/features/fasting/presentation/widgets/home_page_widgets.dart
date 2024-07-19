@@ -1,16 +1,11 @@
-import 'dart:developer';
 
 import 'package:fasting_app/core/entities/time_ration_entity.dart';
 import 'package:fasting_app/core/theme/palette.dart';
 import 'package:fasting_app/core/utils/format_datetime.dart';
-import 'package:fasting_app/core/widgets/guage.dart';
 import 'package:fasting_app/core/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:rive/rive.dart';
 
 class HomePageWidgets {
   static Widget timerSetButton({
@@ -34,18 +29,18 @@ class HomePageWidgets {
                       color: ColorConstantsDark.buttonBackgroundColor
                           .withOpacity(0.7),
                     ),
-                    // kWidth(10.w),
-                    // Icon(
-                    //   FontAwesomeIcons.pen,
-                    //   size: 14.r,
-                    // ),
+                    
+                    
+                    
+                    
+                    
                   ]
                 : [
-                    // Icon(
-                    //   FontAwesomeIcons.pen,
-                    //   size: 14.r,
-                    // ),
-                    // kWidth(10.w),
+                    
+                    
+                    
+                    
+                    
                     kText(
                       title,
                       fontSize: 13,
@@ -112,8 +107,7 @@ class _TipsContainer extends StatefulWidget {
   final Animation animation;
   final int index;
   const _TipsContainer(
-      {super.key,
-      required this.emoji,
+      {required this.emoji,
       required this.title,
       required this.content,
       required this.animation,
@@ -130,7 +124,7 @@ class _TipsContainerState extends State<_TipsContainer> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       containerHeight = _key.currentContext!.size!.height;
     });

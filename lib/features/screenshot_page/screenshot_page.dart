@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:fasting_app/core/theme/palette.dart';
@@ -112,7 +111,7 @@ class _ScreenshotPageState extends State<ScreenshotPage>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Color(0xff211f25),
+      backgroundColor: const Color(0xff211f25),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -216,13 +215,13 @@ class _ScreenshotPageState extends State<ScreenshotPage>
                                           timeScheduleDisplay(
                                             title: 'Start',
                                             dateTime: widget.startTime,
-                                            // value: 'Today 4:53 PM',
+                                            
                                             index: 0,
                                           ),
                                           kWidth(50.w),
                                           timeScheduleDisplay(
                                             title: 'End',
-                                            // value: 'Thu May 16, 3:53 AM',
+                                            
                                             dateTime: widget.endTime,
                                             index: 1,
                                           ),

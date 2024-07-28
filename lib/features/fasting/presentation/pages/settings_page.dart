@@ -85,7 +85,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       width: 200.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),
                       decoration: BoxDecoration(
-                        
                         color: Colors.transparent,
                         border: Border.all(
                           width: 2.r,
@@ -369,5 +368,3 @@ enum _ButtonType {
   arrowType,
   normalType,
 }
-
-

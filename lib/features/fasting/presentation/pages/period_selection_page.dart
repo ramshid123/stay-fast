@@ -61,23 +61,6 @@ class PeriodSelectionPage extends StatelessWidget {
                 context: context,
               ),
               kHeight(25.h),
-              kText(
-                'Long fasts',
-                fontSize: 15,
-                color: ColorConstantsDark.iconsColor,
-              ),
-              kHeight(15.h),
-              PeriodSelectionPageWidgets.periodGridList(
-                level: 'level4',
-                context: context,
-              ),
-              kHeight(25.h),
-              kText(
-                'Flexible',
-                fontSize: 15,
-                color: ColorConstantsDark.iconsColor,
-              ),
-              kHeight(15.h),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                 decoration: BoxDecoration(
